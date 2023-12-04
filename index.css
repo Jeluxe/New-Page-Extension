@@ -76,7 +76,7 @@ a:visited {
   box-shadow: 0 0 3px 0.2px;
 }
 
-.folder-preview>#folder-content>div {
+.folder-preview>#folder-content-wrapper>#folder-content>div {
   pointer-events: none;
 }
 
@@ -278,7 +278,7 @@ a:visited {
 .folder-modal-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   margin: 5px;
   border: 1px solid black;
   box-shadow: 0 0 3px 0.2px;
@@ -299,17 +299,23 @@ a:visited {
     padding: 10px 0;
   }
 
-  & #folder-content {
+  & #folder-content-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 5px;
     height: 100%;
-    width: 100%;
     background-color: rgba(206, 200, 200, 0.5);
     border-radius: 0 0 5px 5px;
     padding-bottom: 10px;
+
+    & #folder-content {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 90%;
+      gap: 5px;
+    }
   }
 }
 

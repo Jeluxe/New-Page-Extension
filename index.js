@@ -231,7 +231,7 @@ const createFolder = (data = null) => {
     console.log('cards capacity is full')
     return;
   }
-  const position = data?.position || cardList.length
+  const position = data?.position ?? cardList.length
 
   const folder = document.createElement('div');
   const folderWrapper = document.createElement('div')
@@ -524,6 +524,7 @@ const resetModal = () => {
   cardModal.classList.add("hide");
   imgPreview = null;
   flag = null;
+  saveFolderPosition = null;
 };
 
 const render = async () => {

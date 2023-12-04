@@ -176,7 +176,6 @@ const removeEvent = (e) => {
 
   const element = e.target.parentNode.parentNode;
   const elementPos = Number(element.getAttribute('position'))
-  const isParentFolder = element.parentNode.getAttribute('id') === 'folder-content'
 
   const updatedCards = cardList.map((card) => {
     if (card.type !== 'folder') {
