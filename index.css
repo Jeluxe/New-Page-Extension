@@ -1,0 +1,479 @@
+body {
+  margin: 0;
+}
+
+.card i,
+.card span {
+  color: rgba(255, 255, 255, 0.801);
+}
+
+#background {
+  height: 100vh;
+  background-size: cover;
+}
+
+a {
+  display: flex;
+  justify-content: flex-end;
+}
+
+input {
+  width: 96%;
+  height: 25px;
+  padding: 0 5px;
+  font-size: 5mm;
+  font-weight: 500;
+}
+
+a:link,
+a:visited {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+.edit,
+.remove {
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  align-self: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+  min-height: 55vh;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 120px;
+  gap: 4px 2px
+}
+
+.card,
+.folder-preview {
+  width: 190px;
+  height: 110px;
+  border-radius: 5px;
+  margin: 5px;
+  border: 1px solid black;
+  box-shadow: 0 0 3px 0.2px;
+}
+
+.folder-preview>#folder-content>div {
+  pointer-events: none;
+}
+
+.folder-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* .card {
+  background-color: rgb(58, 58, 58);
+} */
+
+.folder-preview,
+.folder {
+  background-color: #dfdfdf4f;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.folder-title,
+.folder-preview-title {
+  display: flex;
+  justify-content: center;
+}
+
+.folder-preview-title {
+  font-size: 15px;
+  min-height: 15px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.folder-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 5px 10px;
+  height: 100%;
+
+  & div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(58, 58, 58, 0.425);
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+  }
+
+  & img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+#addFolder img {
+  width: 20px;
+}
+
+.logo {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  row-gap: 10px;
+  justify-content: end;
+  align-items: center;
+}
+
+.bottom-title {
+  display: inline-block;
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-align: center;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.btn-group {
+  display: flex;
+  visibility: hidden;
+  padding: 5px 7px 0 0;
+  position: absolute;
+}
+
+.card:hover>.btn-group,
+.folder-preview:hover>.btn-group {
+  visibility: visible;
+}
+
+.controls {
+  display: flex;
+  justify-items: center;
+  gap: 10px;
+  font-size: 14px;
+  background-color: rgba(189, 189, 189, 0.644);
+  padding: 0.7rem;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.controls-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.controls-wrapper {
+  display: flex;
+  justify-content: end;
+}
+
+.controls-wrapper i {
+  margin-right: 5px;
+}
+
+.shake {
+  /* Start the shake animation and make the animation last for 0.5 seconds */
+  animation: shake 0.5s;
+
+  /* When the animation is finished, start again */
+  animation-iteration-count: infinite;
+}
+
+.ripple {
+  background-position: center;
+  transition: 0.1s;
+}
+
+.ripple:hover,
+.ripple:hover .path {
+  color: white;
+  stroke: white;
+  background: rgba(107, 107, 107, 0.397) radial-gradient(circle, transparent 1%, rgba(255, 255, 255, 0.473) 1%) center/15000%;
+}
+
+.path {
+  fill: transparent;
+  stroke: black;
+  stroke-width: 8;
+}
+
+.ripple:active {
+  background-color: #5c5c5c71;
+  background-size: 100%;
+  transition: 0s;
+}
+
+.clickEffect:active {
+  background-color: #c7c7c771;
+  background-size: 100%;
+  transition: 0s;
+}
+
+.overlay {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 1;
+}
+
+.modals-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+}
+
+.card-modal-container,
+.bg-modal-container,
+.import-export-modal-container,
+.folder-modal-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.modal-wrapper {
+  background-color: rgba(255, 255, 255, 0.425);
+  border-radius: 5px;
+  margin-top: 40px;
+  width: 50%;
+}
+
+#bg-modal {
+  display: flex;
+  align-items: center;
+}
+
+.folder-modal-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 5px;
+  border: 1px solid black;
+  box-shadow: 0 0 3px 0.2px;
+  width: 60%;
+  height: 50vh;
+  background-color: rgba(206, 200, 200, 0.5);
+  border-radius: 5px;
+
+  & .folder-title {
+    min-height: 30px;
+    width: 100%;
+    font-size: 30px;
+    background-color: rgba(206, 200, 200, 0.5);
+    border-radius: 5px 5px 0 0;
+    border: none;
+    outline: none;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  & #folder-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(206, 200, 200, 0.5);
+    border-radius: 0 0 5px 5px;
+    padding-bottom: 10px;
+  }
+}
+
+#import-export-modal {
+  display: flex;
+  padding: 40px 20px;
+}
+
+#import-export-modal>.sections {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  display: inherit;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: aliceblue;
+  border-radius: 5px;
+  padding: 40px 0;
+
+  & .section-title {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: large;
+    font-weight: bold;
+  }
+
+  &:first-child {
+    border-right: 1px solid black;
+  }
+
+  &:last-child {
+    padding: 40px 30px;
+    border-left: 1px solid black;
+  }
+}
+
+#import-input {
+  opacity: 0;
+}
+
+.import-input-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  border: 2px dashed blueviolet;
+  border-radius: 5px;
+  color: blue;
+  cursor: pointer;
+}
+
+#file-content {
+  width: 200px;
+  height: 200px;
+}
+
+#notification {
+  color: red;
+}
+
+.icons-wrap {
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+  margin-left: 10px;
+}
+
+.icons-wrap>i {
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.modal-controls-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 40%;
+}
+
+.add-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 20vh;
+}
+
+#bg-input {
+  float: right;
+}
+
+.modal-btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+#doneBtn {
+  border: 1px solid rgb(0, 0, 0);
+  background-color: rgba(255, 255, 255, 0.767);
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+.add-modal {
+  padding: 20px;
+}
+
+.hide {
+  display: none;
+}
+
+@media (min-width: 0px) {
+  .cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (min-width: 450px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 790px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1020px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1450px) {
+  .cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+
+  75% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+
+  100% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+}
