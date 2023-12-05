@@ -91,14 +91,15 @@ successConfigModalBtn.addEventListener("click", () => {
   if (configData) {
     updateLocalStorage("cards", configData?.cards)
     updateLocalStorage("background", configData?.background)
-    render()
+    renderCards(configData?.cards)
+    renderBackground(configData?.background)
   }
   resetModal();
 });
 
 folderTitle.addEventListener('blur', () => {
   if (saveFolderPosition) {
-    cardList = cardList.map(card => {
+    const updatedCards = cardList.map(card => {
       if (card.position === Number(saveFolderPosition) && card.type === 'folder') {
         return {
           ...card,
@@ -109,8 +110,8 @@ folderTitle.addEventListener('blur', () => {
       }
     })
 
-    updateLocalStorage("cards", cardList)
-    render()
+    updateLocalStorage("cards", updatedCards)
+    renderCards(updatedCards)
   }
 })
 
@@ -227,7 +228,7 @@ const removeFolderAndUpdate = (folderToRemove, folderPos) => {
 }
 
 const createFolder = (data = null) => {
-  if (getCards().length === 20) {
+  if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
     console.log('cards capacity is full')
     return;
   }
@@ -337,7 +338,7 @@ folderContent.addEventListener('drop', async (e) => {
 
   const updatedList = await dropEvent(e, foundFolder.cards, folderContent)
 
-  cardList = cardList.map(card => {
+  const updatedCards = cardList.map(card => {
     if (card.position === targetPos) {
       return {
         ...card,
@@ -347,11 +348,15 @@ folderContent.addEventListener('drop', async (e) => {
     return card
   })
 
-  updateLocalStorage("cards", cardList)
-  render()
+  updateLocalStorage("cards", updatedCards)
+  renderCards(updatedCards)
 })
 
 addFolder.addEventListener('click', () => {
+  if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
+    console.log('cards capacity is full')
+    return;
+  }
   createFolder(null)
   cardList.push({ type: 'folder', name: 'folder', cards: [], position: cardList.length })
   updateLocalStorage("cards", cardList)
@@ -374,7 +379,7 @@ cardsElement.addEventListener("drop", (e) => {
     return;
   }
   updateLocalStorage("cards", updatedList);
-  render()
+  renderCards(updatedList)
 })
 
 const createCard = (title, url, logo = null, color, position = null) => {
@@ -527,11 +532,11 @@ const resetModal = () => {
   saveFolderPosition = null;
 };
 
-const render = async () => {
+const renderCards = async (cards) => {
   if (cardsElement.children.length) {
     cardsElement.replaceChildren()
   }
-  cardList = fetchData("cards");
+  cardList = cards ?? fetchData("cards");
 
   if (cardList === null) {
     cardList = [];
@@ -567,11 +572,14 @@ const errorMsgManager = (flag) => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const savedBg = fetchData("background");
-  render();
-
+const renderBackground = (bg) => {
+  const savedBg = bg ?? fetchData("background");
   if (savedBg) {
     background.style.backgroundImage = `url(` + savedBg + `)`;
   }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderBackground();
+  renderCards();
 });
