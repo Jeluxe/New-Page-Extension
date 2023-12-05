@@ -33,6 +33,7 @@ const notification = document.getElementById('notification');
 let cardList = [];
 let flag;
 let imgPreview;
+let timeout;
 let configData;
 let saveFolderPosition;
 
@@ -54,11 +55,23 @@ overlay.addEventListener("click", () => {
   resetModal()
 })
 
-overlay.addEventListener("drop", (e) => {
-  if (!folderModal.classList.contains('hide')) {
-    console.log('first')
-  }
-})
+importArea.addEventListener('dragover', function (e) {
+  e.preventDefault();
+  importArea.classList.add('drag-over');
+});
+
+importArea.addEventListener('drop', function (e) {
+  e.preventDefault();
+  importArea.classList.remove('drag-over');
+
+  var files = e.dataTransfer.files;
+
+  extractDataFromFile(files[0])
+});
+
+importArea.addEventListener('dragleave', function () {
+  importArea.classList.remove('drag-over');
+});
 
 Array.from([cardModal, folderModal, importExportModal, bgModal]).forEach(modal => modal.addEventListener("click", (e) => {
   e.stopPropagation()
@@ -69,8 +82,7 @@ doneBtn.addEventListener("click", async () => {
 });
 
 cancelBgChangeBtn.addEventListener("click", () => {
-  background.style.backgroundImage =
-    `url(` + fetchData("background") + `)`;
+  renderBackground()
   resetModal();
 });
 
@@ -87,12 +99,11 @@ cancelConfigModalBtn.addEventListener("click", () => {
   configData = null;
 });
 
-successConfigModalBtn.addEventListener("click", () => {
+successConfigModalBtn.addEventListener("click", async () => {
   if (configData) {
-    updateLocalStorage("cards", configData?.cards)
-    updateLocalStorage("background", configData?.background)
-    renderCards(configData?.cards)
-    renderBackground(configData?.background)
+    extractDataFromFile(configData);
+  } else {
+    console.log('Some of the data is not valid!')
   }
   resetModal();
 });
@@ -161,30 +172,8 @@ bgInput.addEventListener("change", (e) => {
 importInput.addEventListener('change', (e) => {
   notification.innerText = ""
   const file = e.target.files[0];
-  if (file.size * 2 >= 4000000) {
-    alert("image file size is too big, it will NOT be saved!");
-    return;
-  } else if (file.type !== 'application/json' || file.name.split('.').at(-1) !== 'json') {
-    alert('not json file');
-  } else {
-    const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const fileContent = e.target.result;
-      const fileContentJson = JSON.parse(fileContent)
-
-      if (Object.keys(fileContentJson).includes('background') || Object.keys(fileContentJson).includes('cards')) {
-        importArea.classList.add('hide')
-        importBtns.classList.remove('hide')
-
-        fileName.innerText = file.name;
-        configData = fileContentJson;
-      } else {
-        notification.innerText = 'not allowed content!'
-      }
-    }
-    reader.readAsText(file)
-  }
+  extractDataFromFile(file)
 })
 
 backgroundBtn.addEventListener("click", (e) => {
@@ -204,125 +193,8 @@ importExportButton.addEventListener("click", (e) => {
   notification.innerText = '';
 });
 
-const openFolder = (e) => {
-  overlay.classList.remove('hide')
-  const target = getFolder(e.target)
-  const targetPos = target.getAttribute('position')
-  saveFolderPosition = targetPos
-  const foundFolder = cardList.find(card => card.position === Number(targetPos))
-
-  folderTitle.value = foundFolder.name;
-  foundFolder?.cards.forEach(card => {
-    const { title, url, logo, color, position } = card
-    const newCard = createCard(title, url, logo, color, position)
-    folderContent.append(newCard)
-  })
-  folderModal.classList.remove('hide')
-}
-
-const removeFolderAndUpdate = (folderToRemove, folderPos) => {
-  folderToRemove.remove()
-  const updatedCards = cardList.filter(card => card.position !== Number(folderPos) ? card : "")
-
-  updateLocalStorage("cards", updatedCards);
-}
-
-const createFolder = (data = null) => {
-  if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
-    console.log('cards capacity is full')
-    return;
-  }
-  const position = data?.position ?? cardList.length
-
-  const folder = document.createElement('div');
-  const folderWrapper = document.createElement('div')
-  const btnsDiv = document.createElement("div");
-  const removeBtn = document.createElement("i");
-
-  folder.classList.add('folder-preview');
-  folderWrapper.classList.add('folder-wrapper');
-  folder.setAttribute('position', position)
-  folder.setAttribute('draggable', true)
-
-  const folderPreviewTitle = document.createElement('div');
-  folderPreviewTitle.innerHTML = data?.name || "folder"
-  folderPreviewTitle.classList.add('folder-preview-title');
-  folderPreviewTitle.setAttribute('draggable', false)
-  folderWrapper.appendChild(folderPreviewTitle)
-
-  Array.from([btnsDiv, removeBtn]).forEach((element) => {
-    element.setAttribute("draggable", false);
-    element.addEventListener("dragstart", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-  });
-
-  btnsDiv.classList.add("btn-group");
-  removeBtn.classList.add("fas", "fa-times", "remove");
-
-  removeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-
-    const folderToRemove = e.target.parentNode.parentNode;
-    const folderPos = folderToRemove.getAttribute('position')
-
-    if (folderToRemove.querySelector('.folder-container').children.length) {
-      if (confirm('you have cards inside the folder, are you sure you want to delete the folder?')) {
-        removeFolderAndUpdate(folderToRemove, folderPos)
-      }
-    } else {
-      removeFolderAndUpdate(folderToRemove, folderPos)
-    }
-  })
-
-  btnsDiv.appendChild(removeBtn);
-
-
-  const container = document.createElement('div');
-  container.classList.add('folder-container')
-
-  if (data?.cards.length) {
-    data.cards.forEach(card => {
-      const logo = document.createElement("img");
-      const itemPreview = document.createElement('div');
-
-      logo.src = card.logo;
-      logo.width = 40;
-
-      logo.style.pointerEvents = "none";
-      itemPreview.style.pointerEvents = "none"
-
-      itemPreview.appendChild(logo)
-      container.appendChild(itemPreview)
-    })
-  }
-
-  folderWrapper.appendChild(container);
-
-  folder.addEventListener('click', (e) => {
-    e.stopPropagation()
-    openFolder(e)
-  })
-
-  folder.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  });
-
-  folder.addEventListener('drop', (e) => {
-    e.stopPropagation()
-
-    folderDropEvent(e, container)
-  })
-
-  folder.appendChild(folderWrapper)
-  folder.appendChild(btnsDiv)
-
-  cardsElement.appendChild(folder);
-}
-
 folderContent.addEventListener("dragstart", (e) => {
+  e.stopPropagation()
   e.dataTransfer.setData("src", e.target.getAttribute("position"));
 });
 
@@ -333,6 +205,7 @@ folderContent.addEventListener("dragover", (e) => {
 
 folderContent.addEventListener('drop', async (e) => {
   e.stopPropagation()
+
   const targetPos = Number(saveFolderPosition)
   const foundFolder = cardList.find(card => card.position === targetPos)
 
@@ -356,10 +229,11 @@ addFolder.addEventListener('click', () => {
   if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
     console.log('cards capacity is full')
     return;
+  } else {
+    const result = createFolder(null);
+    (result) ? cardList.push({ type: 'folder', name: 'folder', cards: [], position: cardList.length }) : "";
+    updateLocalStorage("cards", cardList)
   }
-  createFolder(null)
-  cardList.push({ type: 'folder', name: 'folder', cards: [], position: cardList.length })
-  updateLocalStorage("cards", cardList)
 })
 
 cardsElement.addEventListener("dragstart", (e) => {
@@ -381,53 +255,6 @@ cardsElement.addEventListener("drop", (e) => {
   updateLocalStorage("cards", updatedList);
   renderCards(updatedList)
 })
-
-const createCard = (title, url, logo = null, color, position = null) => {
-  const card = document.createElement("a");
-  const btnsDiv = document.createElement("div");
-  const imgDiv = document.createElement("div");
-  const img = document.createElement("img");
-  const removeBtn = document.createElement("i");
-  const editBtn = document.createElement("i");
-  const span = document.createElement("span");
-
-  card.classList.add("card");
-  card.style.backgroundColor = color;
-  span.innerHTML = title;
-  card.setAttribute(
-    "position",
-    position === null ? cardElement.length : position
-  );
-  card.setAttribute("href", url);
-  card.setAttribute("draggable", true);
-  img.src = logo;
-  img.width = 40;
-  imgDiv.classList.add("logo");
-  span.classList.add("bottom-title");
-
-  [btnsDiv, imgDiv, img, removeBtn, editBtn, span].forEach((element) => {
-    element.setAttribute("draggable", false);
-    element.addEventListener("dragstart", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-  });
-
-  btnsDiv.classList.add("btn-group");
-  removeBtn.classList.add("fas", "fa-times", "remove");
-  editBtn.classList.add("fas", "fa-edit", "edit");
-
-  removeBtn.addEventListener("click", removeEvent);
-  editBtn.addEventListener("click", editEvent);
-
-  imgDiv.append(img);
-  imgDiv.append(span);
-  btnsDiv.append(editBtn);
-  btnsDiv.append(removeBtn);
-  card.append(imgDiv);
-  card.append(btnsDiv);
-  return card;
-};
 
 const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null, inFolder = false }) => {
   if (!newTitle || !newUrl) {
@@ -532,54 +359,8 @@ const resetModal = () => {
   saveFolderPosition = null;
 };
 
-const renderCards = async (cards) => {
-  if (cardsElement.children.length) {
-    cardsElement.replaceChildren()
-  }
-  cardList = cards ?? fetchData("cards");
-
-  if (cardList === null) {
-    cardList = [];
-  }
-  for (let i = 0; i <= cardList.length && cardList.length <= 20; i++) {
-    for (let j = 0; j < cardList.length && cardList.length < 21; j++) {
-      if (j > cardList.length || i > cardList.length) {
-        return;
-      }
-
-      if (cardList[j].position === i) {
-        if (cardList[j].type === 'folder') {
-          createFolder(cardList[j])
-
-          break;
-        } else {
-          const { title, url, logo, color, position } = cardList[j];
-          const card = createCard(title, url, logo, color, position);
-          cardsElement.append(card);
-
-          break;
-        }
-      }
-    }
-  }
-};
-
-const errorMsgManager = (flag) => {
-  if (flag === "max") {
-    return alert("you reached maximum card capacity!");
-  } else {
-    return alert("you do not meet the requirements!");
-  }
-};
-
-const renderBackground = (bg) => {
-  const savedBg = bg ?? fetchData("background");
-  if (savedBg) {
-    background.style.backgroundImage = `url(` + savedBg + `)`;
-  }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
+  makeTextInputUndroppable()
   renderBackground();
   renderCards();
 });
