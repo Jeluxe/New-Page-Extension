@@ -101,7 +101,7 @@ cancelConfigModalBtn.addEventListener("click", () => {
 
 successConfigModalBtn.addEventListener("click", async () => {
   if (configData) {
-    extractDataFromFile(configData);
+    validateDataFromFile(configData);
   } else {
     console.log('Some of the data is not valid!')
   }
