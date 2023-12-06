@@ -51,11 +51,11 @@ const renderCards = async (cards) => {
 
 const createCard = ({ title, url, logo = null, color, position = null }) => {
   const card = document.createElement("a");
-  const btnsDiv = document.createElement("div");
+  const buttonsDiv = document.createElement("div");
   const imgDiv = document.createElement("div");
   const img = document.createElement("img");
-  const removeBtn = document.createElement("i");
-  const editBtn = document.createElement("i");
+  const removeButton = document.createElement("i");
+  const editButton = document.createElement("i");
   const span = document.createElement("span");
 
   card.classList.add("card");
@@ -63,7 +63,7 @@ const createCard = ({ title, url, logo = null, color, position = null }) => {
   span.innerHTML = title;
   card.setAttribute(
     "position",
-    position === null ? cardElement.length : position
+    position === null ? cardsElement.length : position
   );
   card.setAttribute("href", url);
   card.setAttribute("draggable", true);
@@ -72,7 +72,7 @@ const createCard = ({ title, url, logo = null, color, position = null }) => {
   imgDiv.classList.add("logo");
   span.classList.add("bottom-title");
 
-  [btnsDiv, imgDiv, img, removeBtn, editBtn, span].forEach((element) => {
+  [buttonsDiv, imgDiv, img, removeButton, editButton, span].forEach((element) => {
     element.setAttribute("draggable", false);
     element.addEventListener("dragstart", (e) => {
       e.preventDefault();
@@ -80,19 +80,19 @@ const createCard = ({ title, url, logo = null, color, position = null }) => {
     });
   });
 
-  btnsDiv.classList.add("btn-group");
-  removeBtn.classList.add("fas", "fa-times", "remove");
-  editBtn.classList.add("fas", "fa-edit", "edit");
+  buttonsDiv.classList.add("button-group");
+  removeButton.classList.add("fas", "fa-times", "remove");
+  editButton.classList.add("fas", "fa-edit", "edit");
 
-  removeBtn.addEventListener("click", removeEvent);
-  editBtn.addEventListener("click", editEvent);
+  removeButton.addEventListener("click", removeEvent);
+  editButton.addEventListener("click", editEvent);
 
   imgDiv.append(img);
   imgDiv.append(span);
-  btnsDiv.append(editBtn);
-  btnsDiv.append(removeBtn);
+  buttonsDiv.append(editButton);
+  buttonsDiv.append(removeButton);
   card.append(imgDiv);
-  card.append(btnsDiv);
+  card.append(buttonsDiv);
   return card;
 };
 
@@ -130,8 +130,8 @@ const createFolder = (data = null) => {
 
   const folder = document.createElement('div');
   const folderWrapper = document.createElement('div')
-  const btnsDiv = document.createElement("div");
-  const removeBtn = document.createElement("i");
+  const buttonsDiv = document.createElement("div");
+  const removeButton = document.createElement("i");
 
   folder.classList.add('folder-preview');
   folderWrapper.classList.add('folder-wrapper');
@@ -144,7 +144,7 @@ const createFolder = (data = null) => {
   folderPreviewTitle.setAttribute('draggable', false)
   folderWrapper.appendChild(folderPreviewTitle)
 
-  Array.from([btnsDiv, removeBtn]).forEach((element) => {
+  Array.from([buttonsDiv, removeButton]).forEach((element) => {
     element.setAttribute("draggable", false);
     element.addEventListener("dragstart", (e) => {
       e.preventDefault();
@@ -152,10 +152,10 @@ const createFolder = (data = null) => {
     });
   });
 
-  btnsDiv.classList.add("btn-group");
-  removeBtn.classList.add("fas", "fa-times", "remove");
+  buttonsDiv.classList.add("button-group");
+  removeButton.classList.add("fas", "fa-times", "remove");
 
-  removeBtn.addEventListener('click', (e) => {
+  removeButton.addEventListener('click', (e) => {
     e.stopPropagation();
 
     const folderToRemove = e.target.parentNode.parentNode;
@@ -170,7 +170,7 @@ const createFolder = (data = null) => {
     }
   })
 
-  btnsDiv.appendChild(removeBtn);
+  buttonsDiv.appendChild(removeButton);
 
 
   const container = document.createElement('div');
@@ -211,7 +211,7 @@ const createFolder = (data = null) => {
   })
 
   folder.appendChild(folderWrapper)
-  folder.appendChild(btnsDiv)
+  folder.appendChild(buttonsDiv)
 
   cardsElement.appendChild(folder);
   return (!data) ? true : false;
@@ -233,9 +233,9 @@ const extractDataFromFile = (file) => {
 
       if (Object.keys(fileContentJson).includes('background') || Object.keys(fileContentJson).includes('cards')) {
         importArea.classList.add('hide')
-        importBtns.classList.remove('hide')
+        importModalButtons.classList.remove('hide')
 
-        fileName.innerText = file.name;
+        importFileName.innerText = file.name;
         configData = fileContentJson;
       } else {
         notification.innerText = 'not allowed content!'
@@ -375,12 +375,12 @@ const dropEvent = (e, list, cardsElement) => {
     cardsElement.replaceChild(srcChild, target);
     cardsElement.replaceChild(targetChild, src);
 
-    const btns = target.querySelector('.btn-group');
-    const removeBtn = target.querySelector('.remove');
-    const editBtn = target.querySelector('.edit');
-    const btnsList = [btns, removeBtn, editBtn]
+    const buttons = target.querySelector('.button-group');
+    const removeButton = target.querySelector('.remove');
+    const editButton = target.querySelector('.edit');
+    const buttonsList = [buttons, removeButton, editButton]
 
-    btnsList.forEach((element) => (element.style.pointerEvents = "auto"));
+    buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
     Array.from(cardsElement.children).forEach((elem, i) => elem.setAttribute('position', i))
 
     const foundSrcCard = list.find(card => card.position === Number(srcPos))

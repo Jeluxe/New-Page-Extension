@@ -1,33 +1,28 @@
 const cardsElement = document.getElementById("cards");
-const cardElement = document.getElementsByClassName("card");
 const overlay = document.getElementById("overlay");
 const background = document.getElementById("background");
+const [addFolder, backgroundButton, importExportButton] = Array.from(document.querySelector("#controls-wrapper").children);
 const cardModal = document.getElementsByClassName("card-modal-container")[0];
-const bgModal = document.getElementsByClassName("bg-modal-container")[0];
-const folderModal = document.getElementsByClassName("folder-modal-container")[0];
-const importExportModal = document.getElementsByClassName("import-export-modal-container")[0];
-const importExportButton = document.getElementById("import-export-button")
-const exportButton = document.getElementById("export-button");
-const exportFile = document.getElementById("export-file-name");
-const importInput = document.getElementById("import-input");
-const importArea = document.getElementsByClassName("import-input-area")[0];
-const fileName = document.getElementsByClassName("file-name")[0];
-const folderTitle = document.getElementsByClassName("folder-title")[0]
-const folderContent = document.getElementById("folder-content");
-const bgInput = document.getElementById("bg-input");
 const titleElement = document.getElementById("title");
 const urlElement = document.getElementById("url");
-const removeBtn = document.getElementsByClassName("remove");
-const editBtn = document.getElementsByClassName("edit");
-const addFolder = document.getElementById("addFolder");
-const doneBtn = document.getElementById("doneBtn");
-const customizeTabsBtn = document.getElementById("customizeTabsBtn");
-const backgroundBtn = document.getElementById("backgroundBtn");
-const importBtns = document.querySelector('.sections > .icons-wrap')
-const cancelBgChangeBtn = document.querySelector("#bg-modal > .icons-wrap > #close");
-const successBgChangeBtn = document.querySelector("#bg-modal > .icons-wrap > #success");
-const cancelConfigModalBtn = document.querySelector(".sections > .icons-wrap > #close");
-const successConfigModalBtn = document.querySelector(".sections > .icons-wrap > #success");
+const [successEditModalButton, cancelEditModalButton] = Array.from(document.querySelector(".modal-controls-wrapper > .icons-wrap").children)
+const bgModal = document.getElementsByClassName("bg-modal-container")[0];
+const bgInput = document.getElementById("bg-input");
+const bgArea = document.getElementById("bg-input-area");
+const bgFileName = document.querySelector("#bg-modal > .sections > .file-name");
+const backgroundModalButtons = document.querySelector('#bg-modal > .sections > .icons-wrap')
+const [successBgChangeButton, cancelBgChangeButton] = Array.from(backgroundModalButtons.children)
+const folderModal = document.getElementById("folder-modal-container");
+const folderTitle = document.getElementById("folder-title")
+const folderContent = document.getElementById("folder-content");
+const importExportModal = document.getElementsByClassName("import-export-modal-container")[0];
+const exportButton = document.getElementById("export-button");
+const exportFileName = document.getElementById("export-file-name");
+const importInput = document.getElementById("import-input");
+const importArea = document.getElementsByClassName("import-input-area")[0];
+const importFileName = document.querySelector("#import-export-modal > .sections > .file-name");
+const importModalButtons = document.querySelector('#import-export-modal > .sections > .icons-wrap')
+const [successConfigModalButton, cancelConfigModalButton] = Array.from(importModalButtons.children)
 const notification = document.getElementById('notification');
 
 let cardList = [];
@@ -51,7 +46,11 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+successEditModalButton.addEventListener('click', () => doneAction())
+cancelEditModalButton.addEventListener('click', () => resetModal())
+
 overlay.addEventListener("click", () => {
+  (imgPreview) ? renderBackground() : "";
   resetModal()
 })
 
@@ -69,37 +68,54 @@ importArea.addEventListener('drop', function (e) {
   extractDataFromFile(files[0])
 });
 
-importArea.addEventListener('dragleave', function () {
-  importArea.classList.remove('drag-over');
+bgArea.addEventListener('dragleave', function () {
+  bgArea.classList.remove('drag-over');
 });
+
+bgArea.addEventListener('dragover', function (e) {
+  e.preventDefault();
+  bgArea.classList.add('drag-over');
+});
+
+bgArea.addEventListener('drop', function (e) {
+  e.preventDefault();
+  bgArea.classList.remove('drag-over');
+
+  var files = e.dataTransfer.files;
+
+  extractDataFromFile(files[0])
+});
+
+bgArea.addEventListener('dragleave', function () {
+  bgArea.classList.remove('drag-over');
+});
+
 
 Array.from([cardModal, folderModal, importExportModal, bgModal]).forEach(modal => modal.addEventListener("click", (e) => {
   e.stopPropagation()
 }))
 
-doneBtn.addEventListener("click", async () => {
-  doneAction();
-});
-
-cancelBgChangeBtn.addEventListener("click", () => {
+cancelBgChangeButton.addEventListener("click", () => {
+  bgArea.classList.remove('hide')
+  backgroundModalButtons.classList.add('hide')
+  bgFileName.innerText = "";
   renderBackground()
-  resetModal();
 });
 
-successBgChangeBtn.addEventListener("click", () => {
+successBgChangeButton.addEventListener("click", () => {
   updateLocalStorage("background", imgPreview);
   resetModal();
 });
 
-cancelConfigModalBtn.addEventListener("click", () => {
+cancelConfigModalButton.addEventListener("click", () => {
   importArea.classList.remove('hide')
-  importBtns.classList.add('hide')
+  importModalButtons.classList.add('hide')
 
-  fileName.innerText = "";
+  importFileName.innerText = "";
   configData = null;
 });
 
-successConfigModalBtn.addEventListener("click", async () => {
+successConfigModalButton.addEventListener("click", async () => {
   if (configData) {
     validateDataFromFile(configData);
   } else {
@@ -130,7 +146,7 @@ const downloadFile = () => {
   const background = fetchData('background')
   const cards = fetchData('cards')
 
-  const fileName = `${exportFile.value.trim().length ? exportFile.value.replaceAll('.', "") : 'config'}.json`;
+  const fileName = `${exportFileName.value.trim().length ? exportFileName.value.replaceAll('.', "") : 'config'}.json`;
   const object = {};
   if (background) {
     object['background'] = background;
@@ -159,13 +175,17 @@ const downloadFile = () => {
 exportButton.addEventListener('click', downloadFile)
 
 bgInput.addEventListener("change", (e) => {
-  if (e.target.files[0].size >= 3000000) {
+  const file = e.target.files[0];
+  if (file.size >= 3000000) {
     alert("image file size is too big, it will NOT be saved!");
     return;
   } else {
-    convertImgToBase64(e.target.files[0]).then((image) => {
+    convertImgToBase64(file).then((image) => {
       imgPreview = image;
     });
+    bgFileName.innerText = file.name;
+    bgArea.classList.add('hide');
+    backgroundModalButtons.classList.remove('hide');
   }
 });
 
@@ -176,7 +196,7 @@ importInput.addEventListener('change', (e) => {
   extractDataFromFile(file)
 })
 
-backgroundBtn.addEventListener("click", (e) => {
+backgroundButton.addEventListener("click", (e) => {
   bgModal.classList.toggle("hide");
   overlay.classList.remove("hide");
   importExportModal.classList.add("hide");
@@ -282,7 +302,7 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
       const folderElement = flag[1]?.parentNode
       if (folderElement?.getAttribute('id', 'folder-content')) {
         cardList = cardList.map((card) => {
-          if (card.position === Number(saveFolderPosition)) {
+          if (card.type === 'folder' && card.position === Number(saveFolderPosition)) {
             const updatedCards = card.cards.map(({ title, url, logo, color, position }) => {
               if (Number(flag[1].getAttribute('position')) === position) {
 
@@ -347,13 +367,16 @@ const resetModal = () => {
   titleElement.value = "";
   urlElement.value = "";
   importInput.value = "";
-  fileName.innerHTML = "";
+  importFileName.innerHTML = "";
+  bgFileName.innerHTML = "";
   notification.innerHTML = "";
-  exportFile.value = "";
+  exportFileName.value = "";
   bgModal.classList.add("hide");
+  bgArea.classList.remove('hide');
+  backgroundModalButtons.classList.add('hide');
   importExportModal.classList.add("hide");
   importArea.classList.remove("hide");
-  importBtns.classList.add("hide");
+  importModalButtons.classList.add("hide");
   cardModal.classList.add("hide");
   imgPreview = null;
   flag = null;

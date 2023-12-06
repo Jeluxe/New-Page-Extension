@@ -24,7 +24,7 @@
             <!-- X tabs X -->
             <!-- controls -->
             <div class="controls-container">
-                <div class="controls-wrapper">
+                <div id="controls-wrapper">
                     <div id="addFolder" class="controls ripple" aria-disabled="true">
                         <!-- <img src="folder-plus.svg" /> -->
                         <svg viewBox="3 5 18 18" width="22" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -75,10 +75,9 @@
                                             <input type="text" id="url" title="url" />
                                         </div>
                                     </div>
-                                    <div class="modal-btns">
-                                        <div id="doneBtn" tabindex="-1" class="clickEffect">
-                                            Done
-                                        </div>
+                                    <div class="icons-wrap">
+                                        <i id="success" class="fas fa-check fa-2x"></i>
+                                        <i id="close" class="fas fa-times fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
@@ -88,10 +87,20 @@
                     <!-- background modal -->
                     <div class="bg-modal-container hide">
                         <div id="bg-modal" class="modal-wrapper">
-                            <input type="file" id="bg-input" title="background">
-                            <div class="icons-wrap">
-                                <i id="success" class="fas fa-check fa-2x"></i>
-                                <i id="close" class="fas fa-times fa-2x"></i>
+                            <div class="sections">
+                                <label id="bg-input-area" class="input-area" for="bg-input">
+                                    <div id="text-wrapper">
+                                        <span>Drag and Drop</span>
+                                        <span>or Browse file here</span>
+                                    </div>
+                                    <input type="file" accept="image/*" id="bg-input" title="background" hidden>
+                                </label>
+                                <div class="file-name"></div>
+                                <div class="icons-wrap hide">
+                                    <i id="success" class="fas fa-check fa-2x"></i>
+                                    <i id="close" class="fas fa-times fa-2x"></i>
+                                </div>
+                                <div id="notification"></div>
                             </div>
                         </div>
                     </div>
@@ -101,8 +110,8 @@
                         <div id="import-export-modal" class="modal-wrapper">
                             <div class="sections">
                                 <div class="section-title">Import</div>
-                                <label class="import-input-area" for="import-input">
-                                    <div id="import-text-wrapper">
+                                <label class="import-input-area  input-area" for="import-input">
+                                    <div id="text-wrapper">
                                         <span>Drag and Drop</span>
                                         <span>or Browse file here</span>
                                     </div>
@@ -124,8 +133,8 @@
                     </div>
                     <!-- X modal X -->
                     <!-- folder modal -->
-                    <div class="folder-modal-container hide">
-                        <input type="text" class="folder-title" />
+                    <div id="folder-modal-container" class="hide">
+                        <input type="text" id="folder-title" />
                         <div id="folder-content-wrapper">
                             <div id="folder-content"></div>
                         </div>
