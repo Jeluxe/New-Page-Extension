@@ -206,23 +206,24 @@ folderContent.addEventListener("dragover", (e) => {
 folderContent.addEventListener('drop', async (e) => {
   e.stopPropagation()
 
-  const targetPos = Number(saveFolderPosition)
-  const foundFolder = cardList.find(card => card.position === targetPos)
+  if (e.target !== folderContent) {
+    const folderPos = Number(saveFolderPosition)
+    const foundFolder = cardList.find(card => card.position === folderPos)
+    const updatedList = await dropEvent(e, foundFolder.cards, folderContent)
 
-  const updatedList = await dropEvent(e, foundFolder.cards, folderContent)
-
-  const updatedCards = cardList.map(card => {
-    if (card.position === targetPos) {
-      return {
-        ...card,
-        cards: updatedList
+    const updatedCards = cardList.map(card => {
+      if (card.position === folderPos) {
+        return {
+          ...card,
+          cards: updatedList
+        }
       }
-    }
-    return card
-  })
+      return card
+    })
 
-  updateLocalStorage("cards", updatedCards)
-  renderCards(updatedCards)
+    updateLocalStorage("cards", updatedCards)
+    renderCards(updatedCards)
+  }
 })
 
 addFolder.addEventListener('click', () => {

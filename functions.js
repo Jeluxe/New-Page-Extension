@@ -39,8 +39,7 @@ const renderCards = async (cards) => {
 
           break;
         } else {
-          const { title, url, logo, color, position } = cardList[j];
-          const card = createCard(title, url, logo, color, position);
+          const card = createCard(cardList[j]);
           cardsElement.append(card);
 
           break;
@@ -50,7 +49,7 @@ const renderCards = async (cards) => {
   }
 };
 
-const createCard = (title, url, logo = null, color, position = null) => {
+const createCard = ({ title, url, logo = null, color, position = null }) => {
   const card = document.createElement("a");
   const btnsDiv = document.createElement("div");
   const imgDiv = document.createElement("div");
@@ -106,22 +105,24 @@ const openFolder = (e) => {
 
   folderTitle.value = foundFolder.name;
   foundFolder?.cards.forEach(card => {
-    const { title, url, logo, color, position } = card
-    const newCard = createCard(title, url, logo, color, position)
+    const newCard = createCard(card)
     folderContent.append(newCard)
   })
+
   folderModal.classList.remove('hide')
 }
 
 const removeFolderAndUpdate = (folderToRemove, folderPos) => {
   folderToRemove.remove()
   const updatedCards = cardList.filter(card => card.position !== Number(folderPos) ? card : "")
+  const repositionedCards = repositionCards(updatedCards)
 
-  updateLocalStorage("cards", updatedCards);
+  updateLocalStorage("cards", repositionedCards);
+  renderCards(repositionedCards)
 }
 
 const createFolder = (data = null) => {
-  if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
+  if (data?.position >= 20 || (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20)) {
     console.log('cards capacity is full')
     return null;
   }
@@ -175,7 +176,7 @@ const createFolder = (data = null) => {
   const container = document.createElement('div');
   container.classList.add('folder-container')
 
-  if (data?.cards.length) {
+  if (data?.cards?.length) {
     data.cards.forEach(card => {
       const logo = document.createElement("img");
       const itemPreview = document.createElement('div');
@@ -388,16 +389,35 @@ const dropEvent = (e, list, cardsElement) => {
     list = list.filter(card => card.position !== Number(srcPos) && card.position !== Number(targetPos))
     list.push({ ...foundSrcCard, position: foundtargetCard.position })
     list.push({ ...foundtargetCard, position: foundSrcCard.position })
-    list = list.sort((cardA, cardB) => {
-      if (cardA.position < cardB.position) {
-        return -1;
-      } else if (cardA.position > cardB.position) {
-        return 1;
-      }
-      return 0;
-    });
+    list = sortCards(list)
   }
   return list;
+}
+
+const sortCards = (list) => {
+  return list.sort((cardA, cardB) => {
+    if (cardA.position < cardB.position) {
+      return -1;
+    } else if (cardA.position > cardB.position) {
+      return 1;
+    }
+    return 0;
+  });
+}
+
+const repositionCards = (list) => {
+  return list.map((card, i) => {
+    if (card.type === 'folder') {
+      const cards = card.cards?.map((fcard, j) => ({ ...fcard, position: j }))
+      return {
+        ...card,
+        cards: cards || [],
+        position: i,
+      }
+    } else {
+      return { ...card, position: i }
+    }
+  })
 }
 
 const removeEvent = (e) => {
@@ -405,50 +425,35 @@ const removeEvent = (e) => {
 
   const element = e.target.parentNode.parentNode;
   const elementPos = Number(element.getAttribute('position'))
+  const isParentFolder = element.parentNode.getAttribute('id')
 
-  const updatedCards = cardList.map((card) => {
-    if (card.type !== 'folder') {
-      return card
-    } else {
-      if (card.position === Number(saveFolderPosition)) {
-        const cards = card.cards.filter(fcard => (fcard.position !== elementPos) ? card : "")
+  let updatedCards = cardList.map((card) => {
+    if (card.position === Number(saveFolderPosition) && card.type === 'folder') {
+      const cards = card.cards.filter(fcard => (fcard.position !== elementPos) ? card : "")
 
-        return {
-          ...card,
-          cards
-        }
+      return {
+        ...card,
+        cards
       }
+    } else {
+      return card
     }
-  });
+  })
+
+  if (isParentFolder !== 'folder-content') {
+    updatedCards = updatedCards.filter(card => (card.position !== elementPos) ? card : "");
+  }
 
   element.remove();
-
 
   Array.from(cardsElement.children).forEach((element, i) => {
     element.setAttribute("position", i);
   })
 
-  const sortedCards = updatedCards.map((card, i) => {
-    if (card.type !== 'folder') {
-      return {
-        ...card,
-        position: i
-      }
-    } else {
-      const cards = card.cards.map((fcard, j) => {
-        return {
-          ...fcard,
-          position: j
-        }
-      })
-      return {
-        ...card,
-        cards
-      }
-    }
-  })
+  const repositionedCards = repositionCards(updatedCards)
 
-  updateLocalStorage("cards", sortedCards);
+  updateLocalStorage("cards", repositionedCards);
+  renderCards(repositionedCards)
 }
 
 const editEvent = (e) => {
