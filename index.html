@@ -63,21 +63,23 @@
                     <!-- tab modal -->
                     <div class="card-modal-container hide">
                         <div id="modal" class="modal-wrapper">
-                            <div class="add-modal">
-                                <div class="modal-controls-wrapper">
-                                    <div class="modal-inputs">
-                                        <div class="modal-text-inputs">
-                                            <b>Title:</b>
-                                            <input type="text" id="title" title="title" />
+                            <div class="sections">
+                                <div class="add-modal">
+                                    <div class="modal-controls-wrapper">
+                                        <div class="modal-inputs">
+                                            <div class="modal-text-inputs">
+                                                <b>Title:</b>
+                                                <input type="text" id="title" title="title" />
+                                            </div>
+                                            <div class="modal-text-inputs">
+                                                <b>URL:</b>
+                                                <input type="text" id="url" title="url" />
+                                            </div>
                                         </div>
-                                        <div class="modal-text-inputs">
-                                            <b>URL:</b>
-                                            <input type="text" id="url" title="url" />
+                                        <div class="icons-wrap">
+                                            <i id="success" class="success ripple fas fa-check fa-2x"></i>
+                                            <i id="close" class="close ripple fas fa-times fa-2x"></i>
                                         </div>
-                                    </div>
-                                    <div class="icons-wrap">
-                                        <i id="success" class="fas fa-check fa-2x"></i>
-                                        <i id="close" class="fas fa-times fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
@@ -88,6 +90,7 @@
                     <div class="bg-modal-container hide">
                         <div id="bg-modal" class="modal-wrapper">
                             <div class="sections">
+                                <div class="section-title">Background Import</div>
                                 <label id="bg-input-area" class="input-area" for="bg-input">
                                     <div id="text-wrapper">
                                         <span>Drag and Drop</span>
@@ -97,8 +100,8 @@
                                 </label>
                                 <div class="file-name"></div>
                                 <div class="icons-wrap hide">
-                                    <i id="success" class="fas fa-check fa-2x"></i>
-                                    <i id="close" class="fas fa-times fa-2x"></i>
+                                    <i id="success" class="success ripple fas fa-check fa-2x"></i>
+                                    <i id="close" class="close ripple fas fa-times fa-2x"></i>
                                 </div>
                                 <div id="notification"></div>
                             </div>
@@ -109,7 +112,7 @@
                     <div class="import-export-modal-container hide">
                         <div id="import-export-modal" class="modal-wrapper">
                             <div class="sections">
-                                <div class="section-title">Import</div>
+                                <div class="section-title">Config Import</div>
                                 <label class="import-input-area  input-area" for="import-input">
                                     <div id="text-wrapper">
                                         <span>Drag and Drop</span>
@@ -119,13 +122,13 @@
                                 </label>
                                 <div class="file-name"></div>
                                 <div class="icons-wrap hide">
-                                    <i id="success" class="fas fa-check fa-2x"></i>
-                                    <i id="close" class="fas fa-times fa-2x"></i>
+                                    <i id="success" class="success ripple fas fa-check fa-2x"></i>
+                                    <i id="close" class="close ripple fas fa-times fa-2x"></i>
                                 </div>
                                 <div id="notification"></div>
                             </div>
                             <div class="sections">
-                                <div class="section-title">Export</div>
+                                <div class="section-title">Config Export</div>
                                 <input type="text" id="export-file-name" title="export file name" />
                                 <button id="export-button">export</button>
                             </div>
