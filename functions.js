@@ -290,50 +290,75 @@ const folderDropEvent = (e, container = null) => {
     const cardsElement = document.getElementById("cards")
     let src = cardsElement.children[srcPos];
 
-    if (src.classList.contains('folder')) {
-      console.log('cannot put folder inside folder!')
-      return;
-    }
+    if (src.classList.contains('folder-preview')) {
+      swapElementSpots(src, target, cardsElement);
 
-    const foundCard = cardList.find(card => card.position === Number(srcPos))
-    const foundFolder = cardList.find(card => card.position === Number(targetPos) && card.type === 'folder')
+      cardList = swapCardsData(srcPos, targetPos, cardList)
+      repositionElements()
+    } else {
+      const child = cardsElement.removeChild(src);
+      child.classList.remove('card')
+      child.removeAttribute('position')
 
-    if (!foundCard || !foundFolder) {
-      return;
-    }
+      const itemPreview = document.createElement('div');
+      itemPreview.style.pointerEvents = "none"
 
-    foundFolder.cards.push({ ...foundCard, position: foundFolder.cards.length })
-    cardList = cardList.filter(card => card.position !== Number(srcPos))
-    cardList = cardList.map((card, i) => {
-      return {
-        ...card,
-        position: i
+      const logoDiv = Array.from(child.children)[0]
+      const logo = Array.from(logoDiv.children)[0]
+      logo.style.pointerEvents = 'none'
+
+      const items = [itemPreview, logo]
+      items.forEach(element => element.setAttribute('draggable', false))
+
+      itemPreview.appendChild(logo)
+      container.appendChild(itemPreview)
+
+      getCards().forEach((element, idx) => {
+        element.setAttribute('position', idx)
+      })
+
+      const foundCard = cardList.find(card => card.position === Number(srcPos))
+      const foundFolder = cardList.find(card => card.position === Number(targetPos) && card.type === 'folder')
+
+      if (!foundCard || !foundFolder) {
+        return;
       }
-    })
+      foundFolder.cards.push({ ...foundCard, position: foundFolder.cards.length })
+      cardList = cardList.filter(card => card.position !== Number(srcPos))
 
-    const child = cardsElement.removeChild(src);
-    child.classList.remove('card')
-    child.removeAttribute('position')
-
-    const itemPreview = document.createElement('div');
-    itemPreview.style.pointerEvents = "none"
-
-    const logoDiv = Array.from(child.children)[0]
-    const logo = Array.from(logoDiv.children)[0]
-    logo.style.pointerEvents = 'none'
-
-    const items = [itemPreview, logo]
-    items.forEach(element => element.setAttribute('draggable', false))
-
-    itemPreview.appendChild(logo)
-    container.appendChild(itemPreview)
-
-    getCards().forEach((element, idx) => {
-      element.setAttribute('position', idx)
-    })
+      cardList = cardList.map((card, i) => {
+        return {
+          ...card,
+          position: i
+        }
+      })
+    }
 
     updateLocalStorage("cards", cardList);
   }
+}
+
+const swapElementSpots = (src, target, cardsElement, list = null) => {
+  const srcChild = src.cloneNode(true);
+  const targetChild = target.cloneNode(true);
+
+  const replacelist = [srcChild, targetChild];
+  replacelist.forEach(elem => {
+    elem.addEventListener('drop',
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (elem.classList.contains('folder-preview')) {
+          folderDropEvent(e)
+        } else {
+          dropEvent(e, list, cardsElement)
+        }
+      })
+  })
+
+  cardsElement.replaceChild(srcChild, target);
+  cardsElement.replaceChild(targetChild, src);
 }
 
 const dropEvent = (e, list, cardsElement) => {
@@ -353,45 +378,19 @@ const dropEvent = (e, list, cardsElement) => {
 
   if (srcPos !== targetPos) {
     let src = cardsElement.childNodes[srcPos];
-
-    const srcChild = src.cloneNode(true);
-    const targetChild = target.cloneNode(true);
-
-    const replacelist = [srcChild, targetChild];
-    replacelist.forEach(elem => {
-      elem.addEventListener('drop',
-        (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-
-          if (elem.classList.contains('folder-preview')) {
-            folderDropEvent(e)
-          } else {
-            dropEvent(e, list, cardsElement)
-          }
-        })
-    })
-
-    cardsElement.replaceChild(srcChild, target);
-    cardsElement.replaceChild(targetChild, src);
+    swapElementSpots(src, target, cardsElement, list);
 
     const buttons = target.querySelector('.button-group');
     const removeButton = target.querySelector('.remove');
     const editButton = target.querySelector('.edit');
     const buttonsList = [buttons, removeButton, editButton]
-
     buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
-    Array.from(cardsElement.children).forEach((elem, i) => elem.setAttribute('position', i))
-
-    const foundSrcCard = list.find(card => card.position === Number(srcPos))
-    const foundtargetCard = list.find(card => card.position === Number(targetPos))
-
-    list = list.filter(card => card.position !== Number(srcPos) && card.position !== Number(targetPos))
-    list.push({ ...foundSrcCard, position: foundtargetCard.position })
-    list.push({ ...foundtargetCard, position: foundSrcCard.position })
-    list = sortCards(list)
+    repositionElements();
   }
-  return list;
+
+  const updatedList = swapCardsData(srcPos, targetPos, list)
+
+  return updatedList;
 }
 
 const sortCards = (list) => {
@@ -403,6 +402,16 @@ const sortCards = (list) => {
     }
     return 0;
   });
+}
+
+const swapCardsData = (srcPos, targetPos, list) => {
+  const foundSrcCard = list.find(card => card.position === Number(srcPos))
+  const foundtargetCard = list.find(card => card.position === Number(targetPos))
+
+  list = list.filter(card => card.position !== Number(srcPos) && card.position !== Number(targetPos))
+  list.push({ ...foundSrcCard, position: foundtargetCard.position })
+  list.push({ ...foundtargetCard, position: foundSrcCard.position })
+  return sortCards(list)
 }
 
 const repositionCards = (list) => {
@@ -419,6 +428,8 @@ const repositionCards = (list) => {
     }
   })
 }
+
+const repositionElements = () => Array.from(cardsElement.children).forEach((elem, i) => elem.setAttribute('position', i))
 
 const removeEvent = (e) => {
   e.preventDefault();
