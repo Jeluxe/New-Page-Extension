@@ -387,9 +387,7 @@ const dropEvent = (e, list, cardsElement) => {
     buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
     repositionElements();
   }
-
   const updatedList = swapCardsData(srcPos, targetPos, list)
-
   return updatedList;
 }
 
