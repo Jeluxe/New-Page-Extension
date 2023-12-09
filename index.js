@@ -30,7 +30,7 @@ let flag;
 let imgPreview;
 let timeout;
 let configData;
-let saveFolderPosition;
+let savedFolderPosition;
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Escape") {
@@ -41,12 +41,12 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keydown", (e) => {
   if (!cardModal.classList.contains("hide")) {
     if (e.code === "Enter") {
-      doneAction();
+      editCardData();
     }
   }
 });
 
-successEditModalButton.addEventListener('click', () => doneAction())
+successEditModalButton.addEventListener('click', () => editCardData())
 cancelEditModalButton.addEventListener('click', () => resetModal())
 
 overlay.addEventListener("click", () => {
@@ -54,12 +54,19 @@ overlay.addEventListener("click", () => {
   resetModal()
 })
 
-importArea.addEventListener('dragover', function (e) {
+overlay.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+})
+
+overlay.addEventListener("drop", dropFromFolderEvent)
+
+importArea.addEventListener('dragover', (e) => {
   e.preventDefault();
   importArea.classList.add('drag-over');
 });
 
-importArea.addEventListener('drop', function (e) {
+importArea.addEventListener('drop', (e) => {
   e.preventDefault();
   importArea.classList.remove('drag-over');
 
@@ -68,16 +75,16 @@ importArea.addEventListener('drop', function (e) {
   extractDataFromFile(files[0])
 });
 
-bgArea.addEventListener('dragleave', function () {
+bgArea.addEventListener('dragleave', () => {
   bgArea.classList.remove('drag-over');
 });
 
-bgArea.addEventListener('dragover', function (e) {
+bgArea.addEventListener('dragover', (e) => {
   e.preventDefault();
   bgArea.classList.add('drag-over');
 });
 
-bgArea.addEventListener('drop', function (e) {
+bgArea.addEventListener('drop', (e) => {
   e.preventDefault();
   bgArea.classList.remove('drag-over');
 
@@ -86,7 +93,7 @@ bgArea.addEventListener('drop', function (e) {
   extractDataFromFile(files[0])
 });
 
-bgArea.addEventListener('dragleave', function () {
+bgArea.addEventListener('dragleave', () => {
   bgArea.classList.remove('drag-over');
 });
 
@@ -125,9 +132,9 @@ successConfigModalButton.addEventListener("click", async () => {
 });
 
 folderTitle.addEventListener('blur', () => {
-  if (saveFolderPosition) {
+  if (savedFolderPosition) {
     const updatedCards = cardList.map(card => {
-      if (card.position === Number(saveFolderPosition) && card.type === 'folder') {
+      if (card.position === Number(savedFolderPosition) && card.type === 'folder') {
         return {
           ...card,
           name: folderTitle.value,
@@ -227,7 +234,7 @@ folderContent.addEventListener('drop', async (e) => {
   e.stopPropagation()
 
   if (e.target !== folderContent) {
-    const folderPos = Number(saveFolderPosition)
+    const folderPos = Number(savedFolderPosition)
     const foundFolder = cardList.find(card => card.position === folderPos)
     const updatedList = await dropEvent(e, foundFolder.cards, folderContent)
 
@@ -277,110 +284,12 @@ cardsElement.addEventListener("drop", (e) => {
   renderCards(updatedList)
 })
 
-const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null, inFolder = false }) => {
-  if (!newTitle || !newUrl) {
-    console.log('no title or url')
-    return;
-  }
-
-  if (cardList === null) {
-    cardList = fetchData("cards");
-  }
-
-  switch (flag[0]) {
-    case "newCard":
-      cardList.push({
-        title: newTitle,
-        url: newUrl,
-        logo: newLogo,
-        color: newColor,
-        position: newPosition ? newPosition : cardList ? cardList.length : 0,
-      });
-      break;
-
-    case "editCard":
-      const folderElement = flag[1]?.parentNode
-      if (folderElement?.getAttribute('id', 'folder-content')) {
-        cardList = cardList.map((card) => {
-          if (card.type === 'folder' && card.position === Number(saveFolderPosition)) {
-            const updatedCards = card.cards.map(({ title, url, logo, color, position }) => {
-              if (Number(flag[1].getAttribute('position')) === position) {
-
-                return {
-                  title: newTitle || title,
-                  url: newUrl || url,
-                  logo: newLogo || logo,
-                  color: newColor || color,
-                  position: newPosition || position,
-                };
-              }
-              return card
-            })
-            return {
-              ...card,
-              cards: updatedCards
-            };
-          }
-          return card
-        });
-      } else {
-        cardList = cardList.map(({ title, url, logo, color, position }, idx) => {
-          if (cardsElement.children[idx] === flag[1]) {
-            return {
-              title: newTitle || title,
-              url: newUrl || url,
-              logo,
-              color,
-              position: newPosition || position,
-            };
-          } else {
-            return {
-              title,
-              url,
-              logo,
-              color,
-              position,
-            };
-          }
-        });
-      }
-      break;
-  }
-
-  updateLocalStorage("cards", cardList);
-};
-
-const doneAction = () => {
+const editCardData = () => {
   setData({ newTitle: titleElement.value, newUrl: urlElement.value });
   flag[1].querySelector(".bottom-title").innerHTML = titleElement.value;
   flag[1].href = urlElement.value;
 
   resetModal();
-};
-
-const resetModal = () => {
-  folderTitle.value = "";
-  folderContent.replaceChildren();
-  overlay.classList.add("hide");
-  folderModal.classList.add('hide')
-  bgInput.value = "";
-  titleElement.value = "";
-  urlElement.value = "";
-  importInput.value = "";
-  importFileName.innerHTML = "";
-  bgFileName.innerHTML = "";
-  notification.innerHTML = "";
-  exportFileName.value = "";
-  bgModal.classList.add("hide");
-  bgArea.classList.remove('hide');
-  backgroundModalButtons.classList.add('hide');
-  importExportModal.classList.add("hide");
-  importArea.classList.remove("hide");
-  importModalButtons.classList.add("hide");
-  cardModal.classList.add("hide");
-  imgPreview = null;
-  flag = null;
-  saveFolderPosition = null;
 };
 
 document.addEventListener("DOMContentLoaded", () => {

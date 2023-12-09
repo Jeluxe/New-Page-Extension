@@ -100,7 +100,7 @@ const openFolder = (e) => {
   overlay.classList.remove('hide')
   const target = getFolder(e.target)
   const targetPos = target.getAttribute('position')
-  saveFolderPosition = targetPos
+  savedFolderPosition = targetPos
   const foundFolder = cardList.find(card => card.position === Number(targetPos))
 
   folderTitle.value = foundFolder.name;
@@ -338,7 +338,73 @@ const folderDropEvent = (e, container = null) => {
   }
 }
 
-const swapElementSpots = (src, target, cardsElement, list = null) => {
+const dropFromFolderEvent = e => {
+  if (e.target.classList.contains('overlay')) {
+    const srcPos = Number(e.dataTransfer.getData("src"));
+    if (cardList.length === 20 && cardsElement.children.length === 20) {
+      console.log("no space to drop")
+      return;
+    } else if (cardList.length > 20 || cardsElement.children.length > 20) {
+      console.log("something went wrong")
+      return;
+    }
+
+    const foundCard = cardList[savedFolderPosition].cards.find(card => card.position === srcPos)
+    const elementToTransfer = folderContent.removeChild(folderContent.children[srcPos])
+    elementToTransfer.setAttribute("position", cardList.length)
+    cardList.push(foundCard);
+
+    const updatedCardsList = cardList.map((card) => {
+      if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
+        return {
+          ...card,
+          cards: repositionCards(card.cards.filter(card => card.position !== srcPos))
+        }
+      } else {
+        return card
+      }
+    })
+    const repositionedCards = repositionCards(updatedCardsList)
+    cardsElement.appendChild(elementToTransfer);
+
+    resetModal()
+
+    updateLocalStorage("cards", repositionedCards);
+    renderCards(repositionedCards)
+  }
+}
+
+const dropEvent = (e, list, cardsElement) => {
+  e.preventDefault();
+
+  let target = e.target;
+  if (!cardsElement.children.length) {
+    return;
+  }
+
+  if (!target.classList.contains('card') && !target.classList.contains('folder-preview')) {
+    return;
+  }
+
+  let srcPos = Number(e.dataTransfer.getData("src"));
+  let targetPos = Number(target.getAttribute("position"));
+
+  if (srcPos !== targetPos) {
+    let src = cardsElement.childNodes[srcPos];
+    swapElementSpots({ src, target, cardsElement, list });
+
+    const buttons = target.querySelector('.button-group');
+    const removeButton = target.querySelector('.remove');
+    const editButton = target.querySelector('.edit');
+    const buttonsList = [buttons, removeButton, editButton]
+    buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
+    repositionElements();
+  }
+  const updatedList = swapCardsData(srcPos, targetPos, list)
+  return updatedList;
+}
+
+const swapElementSpots = ({ src, target, cardsElement, list = null }) => {
   const srcChild = src.cloneNode(true);
   const targetChild = target.cloneNode(true);
 
@@ -361,34 +427,14 @@ const swapElementSpots = (src, target, cardsElement, list = null) => {
   cardsElement.replaceChild(targetChild, src);
 }
 
-const dropEvent = (e, list, cardsElement) => {
-  e.preventDefault();
+const swapCardsData = (srcPos, targetPos, list) => {
+  const foundSrcCard = list.find(card => card.position === Number(srcPos))
+  const foundtargetCard = list.find(card => card.position === Number(targetPos))
 
-  let target = e.target;
-  if (!cardsElement.children.length) {
-    return;
-  }
-
-  if (!target.classList.contains('card') && !target.classList.contains('folder-preview')) {
-    return;
-  }
-
-  let srcPos = Number(e.dataTransfer.getData("src"));
-  let targetPos = Number(target.getAttribute("position"));
-
-  if (srcPos !== targetPos) {
-    let src = cardsElement.childNodes[srcPos];
-    swapElementSpots(src, target, cardsElement, list);
-
-    const buttons = target.querySelector('.button-group');
-    const removeButton = target.querySelector('.remove');
-    const editButton = target.querySelector('.edit');
-    const buttonsList = [buttons, removeButton, editButton]
-    buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
-    repositionElements();
-  }
-  const updatedList = swapCardsData(srcPos, targetPos, list)
-  return updatedList;
+  list = list.filter(card => card.position !== Number(srcPos) && card.position !== Number(targetPos))
+  list.push({ ...foundSrcCard, position: foundtargetCard.position })
+  list.push({ ...foundtargetCard, position: foundSrcCard.position })
+  return sortCards(list)
 }
 
 const sortCards = (list) => {
@@ -400,16 +446,6 @@ const sortCards = (list) => {
     }
     return 0;
   });
-}
-
-const swapCardsData = (srcPos, targetPos, list) => {
-  const foundSrcCard = list.find(card => card.position === Number(srcPos))
-  const foundtargetCard = list.find(card => card.position === Number(targetPos))
-
-  list = list.filter(card => card.position !== Number(srcPos) && card.position !== Number(targetPos))
-  list.push({ ...foundSrcCard, position: foundtargetCard.position })
-  list.push({ ...foundtargetCard, position: foundSrcCard.position })
-  return sortCards(list)
 }
 
 const repositionCards = (list) => {
@@ -437,7 +473,7 @@ const removeEvent = (e) => {
   const isParentFolder = element.parentNode.getAttribute('id')
 
   let updatedCards = cardList.map((card) => {
-    if (card.position === Number(saveFolderPosition) && card.type === 'folder') {
+    if (card.position === Number(savedFolderPosition) && card.type === 'folder') {
       const cards = card.cards.filter(fcard => (fcard.position !== elementPos) ? card : "")
 
       return {
@@ -563,6 +599,104 @@ const errorMsgManager = (flag) => {
   } else {
     return alert("you do not meet the requirements!");
   }
+};
+
+const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null }) => {
+  if (!newTitle || !newUrl) {
+    console.log('no title or url')
+    return;
+  }
+
+  if (cardList === null) {
+    cardList = fetchData("cards");
+  }
+
+  switch (flag[0]) {
+    case "newCard":
+      cardList.push({
+        title: newTitle,
+        url: newUrl,
+        logo: newLogo,
+        color: newColor,
+        position: cardList ? cardList.length : 0,
+      });
+      break;
+
+    case "editCard":
+      const folderElement = flag[1]?.parentNode
+      if (folderElement?.getAttribute('id', 'folder-content')) {
+        cardList = cardList.map((card) => {
+          if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
+            const updatedCards = card.cards.map(({ title, url, logo, color, position }) => {
+              if (Number(flag[1].getAttribute('position')) === position) {
+
+                return {
+                  title: newTitle || title,
+                  url: newUrl || url,
+                  logo: newLogo || logo,
+                  color: newColor || color,
+                  position: newPosition || position,
+                };
+              }
+              return card
+            })
+            return {
+              ...card,
+              cards: updatedCards
+            };
+          }
+          return card
+        });
+      } else {
+        cardList = cardList.map(({ title, url, logo, color, position }, idx) => {
+          if (cardsElement.children[idx] === flag[1]) {
+            return {
+              title: newTitle || title,
+              url: newUrl || url,
+              logo,
+              color,
+              position: newPosition || position,
+            };
+          } else {
+            return {
+              title,
+              url,
+              logo,
+              color,
+              position,
+            };
+          }
+        });
+      }
+      break;
+  }
+
+  updateLocalStorage("cards", cardList);
+};
+
+const resetModal = () => {
+  folderTitle.value = "";
+  folderContent.replaceChildren();
+  overlay.classList.add("hide");
+  folderModal.classList.add('hide')
+  bgInput.value = "";
+  titleElement.value = "";
+  urlElement.value = "";
+  importInput.value = "";
+  importFileName.innerHTML = "";
+  bgFileName.innerHTML = "";
+  notification.innerHTML = "";
+  exportFileName.value = "";
+  bgModal.classList.add("hide");
+  bgArea.classList.remove('hide');
+  backgroundModalButtons.classList.add('hide');
+  importExportModal.classList.add("hide");
+  importArea.classList.remove("hide");
+  importModalButtons.classList.add("hide");
+  cardModal.classList.add("hide");
+  imgPreview = null;
+  flag = null;
+  savedFolderPosition = null;
 };
 
 const makeTextInputUndroppable = () => {
