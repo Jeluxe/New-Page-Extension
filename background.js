@@ -1,5 +1,6 @@
 let titleInput = document.getElementById("title-input");
 let urlInput = document.getElementById("url-input");
+let selectFolderDropdown = document.getElementById("select-folder");
 var button = document.getElementById("submit");
 let tempFavIconUrl;
 let cardList;
@@ -15,8 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   titleInput.value = title;
   urlInput.value = url;
+  cardList = fetchData("cards");
+  createOptions(cardList)
 
-  cardList = fetchData();
   const newTabs = await getNewTab();
 
   button.addEventListener("click", (e) => {
@@ -52,13 +54,69 @@ async function getNewTab() {
   return tabs;
 }
 
+const createOptions = (cardList) => {
+  const filteredList = cardList.filter(card => card.type === "folder")
+
+  for (let item of filteredList) {
+    console.log(item)
+    const newOption = createOption(item)
+
+    selectFolderDropdown.appendChild(newOption)
+  }
+}
+
+const createOption = (item) => {
+  const newOption = document.createElement("option")
+  newOption.setAttribute("value", item.position);
+  console.log(item.cards.length === 8 ? "true" : "false")
+  newOption.disabled = item.cards.length === 8;
+  newOption.innerText = toCamelCase(item.name)
+  return newOption
+}
+
 const updateCards = async (title, url, logo) => {
-  cardList.push({
+  const selectFolderPos = Number(selectFolderDropdown.value)
+  const newCardData = {
     title,
     url,
     logo,
     color: "rgba(58, 58, 58, 0.425)",
-    position: cardList ? cardList.length : 0,
-  });
+    position: cardList.length ? selectFolderPos ? cardList[selectFolderPos].cards.length : cardList.length : 0,
+  }
+  if (selectFolderPos) {
+    cardList = cardList.map(card => {
+      if (card.type === "folder" && card.position === selectFolderPos) {
+        card.cards.push(newCardData)
+        return {
+          ...card,
+          cards: card.cards
+        }
+      } else {
+        return card
+      }
+    })
+  } else {
+    cardList.push(newCardData);
+  }
+
   localStorage.setItem("cards", JSON.stringify(cardList));
 };
+
+const toCamelCase = (inputString) => {
+  // Remove non-alphanumeric characters and split the string into words
+  const words = inputString.replace(/[^a-zA-Z0-9]/g, ' ').split(' ');
+
+  // Capitalize the first letter of each word (except the first word)
+  const camelCaseWords = words.map((word, index) => {
+    if (index === 0) {
+      return word.toLowerCase();
+    } else {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+  });
+
+  // Join the words to form the camel case string
+  const camelCaseString = camelCaseWords.join(' ');
+
+  return camelCaseString;
+}
