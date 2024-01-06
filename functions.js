@@ -623,8 +623,9 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
       break;
 
     case "editCard":
-      const folderElement = flag[1]?.parentNode
-      if (folderElement?.getAttribute('id', 'folder-content')) {
+      const folderElement = flag[1]?.parentNode;
+
+      if (folderElement?.getAttribute('id') === 'folder-content') {
         cardList = cardList.map((card) => {
           if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
             const updatedCards = card.cards.map(({ title, url, logo, color, position }) => {
@@ -648,8 +649,9 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
           return card
         });
       } else {
-        cardList = cardList.map(({ title, url, logo, color, position }, idx) => {
-          if (cardsElement.children[idx] === flag[1]) {
+        cardList = cardList.map((element, idx) => {
+          if (cardsElement.children[idx] === flag[1] && element.type !== 'folder') {
+            const { title, url, logo, color, position } = element;
             return {
               title: newTitle || title,
               url: newUrl || url,
@@ -658,13 +660,7 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
               position: newPosition || position,
             };
           } else {
-            return {
-              title,
-              url,
-              logo,
-              color,
-              position,
-            };
+            return element;
           }
         });
       }
@@ -674,11 +670,14 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
   updateLocalStorage("cards", cardList);
 };
 
-const resetModal = () => {
+const resetModal = (closeFolder) => {
   folderTitle.value = "";
-  folderContent.replaceChildren();
-  overlay.classList.add("hide");
-  folderModal.classList.add('hide')
+  if (closeFolder) {
+    folderContent.replaceChildren();
+    folderModal.classList.add('hide');
+  } else if (folderModal.classList.contains('hide')) {
+    overlay.classList.add("hide");
+  }
   bgInput.value = "";
   titleElement.value = "";
   urlElement.value = "";
