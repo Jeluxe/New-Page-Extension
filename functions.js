@@ -670,32 +670,37 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
   updateLocalStorage("cards", cardList);
 };
 
-const resetModal = (closeFolder) => {
-  folderTitle.value = "";
-  if (closeFolder) {
+const resetModal = () => {
+  if (!folderModal.classList.contains('hide') && cardModal.classList.contains('hide')) {// if folder modal is open and card modal is closed.
+    folderTitle.value = "";
     folderContent.replaceChildren();
     folderModal.classList.add('hide');
-  } else if (folderModal.classList.contains('hide')) {
+    overlay.classList.add("hide");
+  } else if (!folderModal.classList.contains('hide')) {// if folder modal is open and card modal is open.
+    titleElement.value = "";
+    urlElement.value = "";
+    cardModal.classList.add("hide");
+  } else { // rest 
+    titleElement.value = "";
+    bgInput.value = "";
+    urlElement.value = "";
+    importInput.value = "";
+    importFileName.innerHTML = "";
+    bgFileName.innerHTML = "";
+    notification.innerHTML = "";
+    exportFileName.value = "";
+    bgModal.classList.add("hide");
+    bgArea.classList.remove('hide');
+    backgroundModalButtons.classList.add('hide');
+    importExportModal.classList.add("hide");
+    importArea.classList.remove("hide");
+    importModalButtons.classList.add("hide");
+    cardModal.classList.add("hide");
+    imgPreview = null;
+    flag = null;
+    savedFolderPosition = null;
     overlay.classList.add("hide");
   }
-  bgInput.value = "";
-  titleElement.value = "";
-  urlElement.value = "";
-  importInput.value = "";
-  importFileName.innerHTML = "";
-  bgFileName.innerHTML = "";
-  notification.innerHTML = "";
-  exportFileName.value = "";
-  bgModal.classList.add("hide");
-  bgArea.classList.remove('hide');
-  backgroundModalButtons.classList.add('hide');
-  importExportModal.classList.add("hide");
-  importArea.classList.remove("hide");
-  importModalButtons.classList.add("hide");
-  cardModal.classList.add("hide");
-  imgPreview = null;
-  flag = null;
-  savedFolderPosition = null;
 };
 
 const makeTextInputUndroppable = () => {
