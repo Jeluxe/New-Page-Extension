@@ -215,8 +215,16 @@ a:visited {
 .ripple:hover,
 .ripple:hover .path {
   color: white;
-  stroke: white;
   background: rgba(107, 107, 107, 0.397) radial-gradient(circle, transparent 1%, rgba(255, 255, 255, 0.473) 1%) center/15000%;
+}
+
+#backgroundBtn.ripple:hover path {
+  stroke: white;
+}
+
+#import-export-button.ripple:hover path,
+#addFolder.ripple:hover path {
+  fill: white;
 }
 
 .path {
