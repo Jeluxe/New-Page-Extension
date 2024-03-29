@@ -100,14 +100,17 @@ a:visited {
 
 #folder-title,
 .folder-preview-title {
-  display: flex;
-  justify-content: center;
+  font-size: 15px;
+  min-height: 20px;
+  width: 156px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 10px;
 }
 
 .folder-preview-title {
-  font-size: 15px;
-  min-height: 15px;
-  width: 100%;
   font-weight: 600;
 }
 
@@ -284,16 +287,19 @@ a:visited {
   background-color: rgba(206, 200, 200, 0.5);
   border-radius: 5px;
 
-  & #folder-title {
-    min-height: 30px;
-    width: 100%;
-    font-size: 30px;
-    background-color: inherit;
-    border-radius: 5px 5px 0 0;
-    border: none;
-    outline: none;
-    text-align: center;
-    padding: 10px 0;
+  &>div:first-child {
+    padding: 0 10px;
+    background: inherit;
+
+    & #folder-title {
+      width: 100%;
+      font-size: 30px;
+      background-color: transparent;
+      border-radius: 5px 5px 0 0;
+      border: none;
+      outline: none;
+      padding: 10px 0;
+    }
   }
 
   & #folder-content-wrapper {
