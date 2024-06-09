@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .card i,
@@ -29,6 +30,7 @@ a:link,
 a:visited {
   text-decoration: inherit;
   color: inherit;
+  position: relative;
 }
 
 .edit,
@@ -93,9 +95,10 @@ a:visited {
 
 .folder-preview,
 .folder {
-  background-color: #dfdfdf4f;
   display: flex;
   justify-content: flex-end;
+  position: relative;
+  background-color: #dfdfdf4f;
 }
 
 #folder-title,
@@ -539,6 +542,17 @@ a:visited {
   #folder-content {
     grid-template-columns: repeat(3, 1fr) !important;
     padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 1020px) {
+  .container {
+    height: auto;
+    margin: 20px 0;
+  }
+
+  #background {
+    overflow: auto;
   }
 }
 
