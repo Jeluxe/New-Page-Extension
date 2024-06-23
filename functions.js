@@ -291,7 +291,7 @@ const folderDropEvent = (e, container = null) => {
     let src = cardsElement.children[srcPos];
 
     if (src.classList.contains('folder-preview')) {
-      swapElementSpots(src, target, cardsElement);
+      swapElementSpots({ src, target, cardsElement });
 
       cardList = swapCardsData(srcPos, targetPos, cardList)
       repositionElements()
@@ -391,7 +391,7 @@ const dropEvent = (e, list, cardsElement) => {
 
   if (srcPos !== targetPos) {
     let src = cardsElement.childNodes[srcPos];
-    swapElementSpots({ src, target, cardsElement, list });
+    swapElementSpots({ src, target, srcPos, targetPos, cardsElement, list });
 
     const buttons = target.querySelector('.button-group');
     const removeButton = target.querySelector('.remove');
@@ -406,7 +406,7 @@ const dropEvent = (e, list, cardsElement) => {
   return list;
 }
 
-const swapElementSpots = ({ src, target, cardsElement, list = null }) => {
+const swapElementSpots = ({ src, target, srcPos = null, targetPos = null, cardsElement, list = null }) => {
   const srcChild = src.cloneNode(true);
   const targetChild = target.cloneNode(true);
 
@@ -424,6 +424,11 @@ const swapElementSpots = ({ src, target, cardsElement, list = null }) => {
         }
       })
   })
+
+  if (srcPos && targetPos) {
+    targetChild.setAttribute("position", srcPos);
+    srcChild.setAttribute("position", targetPos);
+  }
 
   cardsElement.replaceChild(srcChild, target);
   cardsElement.replaceChild(targetChild, src);
