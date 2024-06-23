@@ -5,10 +5,7 @@ var button = document.getElementById("submit");
 let tempFavIconUrl;
 let cardList;
 
-titleInput?.addEventListener(
-  "keyup",
-  (e) => (titleInput.value = e.target.value)
-);
+titleInput?.addEventListener("keyup", (e) => (titleInput.value = e.target.value));
 urlInput?.addEventListener("keyup", (e) => (urlInput.value = e.target.value));
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -22,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const newTabs = await getNewTab();
 
   button.addEventListener("click", (e) => {
-    if (cardList.length < 20) {
+    if (cardList.length < 20 || cardList[selectFolderDropdown.value].cards.length < 8) {
       convertImgUrlToBase64(favIconUrl, async (convertedImg) => {
         await updateCards(titleInput.value, urlInput.value, convertedImg);
         if (newTabs && typeof newTabs === "object") {
@@ -34,7 +31,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     } else {
       alert("maxed capacity of cards");
-      window.close();
     }
   });
 });
@@ -58,9 +54,7 @@ const createOptions = (cardList) => {
   const filteredList = cardList.filter(card => card.type === "folder")
 
   for (let item of filteredList) {
-    console.log(item)
     const newOption = createOption(item)
-
     selectFolderDropdown.appendChild(newOption)
   }
 }
@@ -68,7 +62,6 @@ const createOptions = (cardList) => {
 const createOption = (item) => {
   const newOption = document.createElement("option")
   newOption.setAttribute("value", item.position);
-  console.log(item.cards.length === 8 ? "true" : "false")
   newOption.disabled = item.cards.length === 8;
   newOption.innerText = toCamelCase(item.name)
   return newOption
