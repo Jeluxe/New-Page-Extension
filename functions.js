@@ -425,7 +425,7 @@ const swapElementSpots = ({ src, target, srcPos = null, targetPos = null, cardsE
       })
   })
 
-  if (srcPos && targetPos) {
+  if (srcPos !== null && targetPos !== null) {
     targetChild.setAttribute("position", srcPos);
     srcChild.setAttribute("position", targetPos);
   }
