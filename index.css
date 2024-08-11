@@ -260,6 +260,7 @@ a:visited {
   height: 100vh;
   background-color: rgba(128, 128, 128, 0.5);
   z-index: 1;
+  backdrop-filter: blur(3px);
 }
 
 .modals-container {
