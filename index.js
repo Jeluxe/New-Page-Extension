@@ -49,10 +49,11 @@ document.addEventListener("keydown", (e) => {
 successEditModalButton.addEventListener('click', () => editCardData())
 cancelEditModalButton.addEventListener('click', () => resetModal())
 
-overlay.addEventListener("click", () => {
-  (imgPreview) ? renderBackground() : "";
-  resetModal()
-})
+Array.from([overlay, cardModal]).forEach(el =>
+  el.addEventListener("click", (e) => {
+    (imgPreview) ? renderBackground() : "";
+    resetModal()
+  }))
 
 overlay.addEventListener("dragover", (e) => {
   e.preventDefault();
@@ -61,46 +62,33 @@ overlay.addEventListener("dragover", (e) => {
 
 overlay.addEventListener("drop", dropFromFolderEvent)
 
-importArea.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  importArea.classList.add('drag-over');
-});
+Array.from([bgArea, importArea]).forEach(el =>
+  el.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    el.classList.add('drag-over');
+  }));
 
-importArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  importArea.classList.remove('drag-over');
+Array.from([bgArea, importArea]).forEach(el =>
+  el.addEventListener('drop', (e) => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
 
-  var files = e.dataTransfer.files;
+    var files = e.dataTransfer.files;
 
-  extractDataFromFile(files[0])
-});
+    extractDataFromFile(files[0])
+  }));
 
-bgArea.addEventListener('dragleave', () => {
-  bgArea.classList.remove('drag-over');
-});
-
-bgArea.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  bgArea.classList.add('drag-over');
-});
-
-bgArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  bgArea.classList.remove('drag-over');
-
-  var files = e.dataTransfer.files;
-
-  extractDataFromFile(files[0])
-});
-
-bgArea.addEventListener('dragleave', () => {
-  bgArea.classList.remove('drag-over');
-});
+Array.from([bgArea, importArea]).forEach(el =>
+  el.addEventListener('dragleave', () => {
+    el.classList.remove('drag-over');
+  }));
 
 
-Array.from([cardModal, folderModal, importExportModal, bgModal]).forEach(modal => modal.addEventListener("click", (e) => {
-  e.stopPropagation()
-}))
+Array.from([cardModal, folderModal, importExportModal, bgModal]).forEach(modal =>
+  modal.addEventListener("click", (e) => {
+    e.stopPropagation()
+  }))
 
 cancelBgChangeButton.addEventListener("click", () => {
   bgArea.classList.remove('hide')
@@ -122,7 +110,7 @@ cancelConfigModalButton.addEventListener("click", () => {
   configData = null;
 });
 
-successConfigModalButton.addEventListener("click", async () => {
+successConfigModalButton.addEventListener("click", () => {
   if (configData) {
     validateDataFromFile(configData);
   } else {
@@ -293,7 +281,8 @@ const editCardData = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  makeTextInputUndroppable()
+  makeTextInputUndroppable();
+  stopModalPropagations();
   renderBackground();
   renderCards();
 });
