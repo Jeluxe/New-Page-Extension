@@ -94,22 +94,3 @@ const updateCards = async (title, url, logo) => {
 
   localStorage.setItem("cards", JSON.stringify(cardList));
 };
-
-const toCamelCase = (inputString) => {
-  // Remove non-alphanumeric characters and split the string into words
-  const words = inputString.replace(/[^a-zA-Z0-9]/g, ' ').split(' ');
-
-  // Capitalize the first letter of each word (except the first word)
-  const camelCaseWords = words.map((word, index) => {
-    if (index === 0) {
-      return word.toLowerCase();
-    } else {
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    }
-  });
-
-  // Join the words to form the camel case string
-  const camelCaseString = camelCaseWords.join(' ');
-
-  return camelCaseString;
-}

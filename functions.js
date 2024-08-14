@@ -625,7 +625,7 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
         url: newUrl,
         logo: newLogo,
         color: newColor,
-        position: cardList ? cardList.length : 0,
+        position: cardList.length ?? 0,
       });
       break;
 
@@ -716,4 +716,29 @@ const makeTextInputUndroppable = () => {
   Array.from(textInputs).forEach(elem => {
     elem.addEventListener('drop', (e) => e.preventDefault())
   })
+}
+
+const toCamelCase = (inputString) => {
+  // Remove non-alphanumeric characters and split the string into words
+  const words = inputString.replace(/[^a-zA-Z0-9]/g, ' ').split(' ');
+
+  // Capitalize the first letter of each word (except the first word)
+  const camelCaseWords = words.map((word, index) => {
+    if (index === 0) {
+      return word.toLowerCase();
+    } else {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+  });
+
+  // Join the words to form the camel case string
+  const camelCaseString = camelCaseWords.join(' ');
+
+  return camelCaseString;
+}
+
+const stopModalPropagations = () => {
+  const modals = document.getElementsByClassName("modal-wrapper");
+
+  Array.from(modals).forEach(modal => modal.addEventListener("click", e => e.stopPropagation()))
 }
