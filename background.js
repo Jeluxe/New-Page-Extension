@@ -1,12 +1,14 @@
 let titleInput = document.getElementById("title-input");
 let urlInput = document.getElementById("url-input");
 let selectFolderDropdown = document.getElementById("select-folder");
-var button = document.getElementById("submit");
+let button = document.getElementById("submit");
+let exportBtn = document.getElementById("export");
 let tempFavIconUrl;
 let cardList;
 
 titleInput?.addEventListener("keyup", (e) => (titleInput.value = e.target.value));
 urlInput?.addEventListener("keyup", (e) => (urlInput.value = e.target.value));
+exportBtn.addEventListener("click", () => downloadFile(true));
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { title, url, favIconUrl } = await getCurrentTab();
@@ -18,17 +20,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const newTabs = await getNewTab();
 
-  button.addEventListener("click", (e) => {
+  button.addEventListener("click", async (e) => {
     if (cardList.length < 20 || cardList[selectFolderDropdown.value].cards.length < 8) {
-      convertImgUrlToBase64(favIconUrl, async (convertedImg) => {
-        await updateCards(titleInput.value, urlInput.value, convertedImg);
-        if (newTabs && typeof newTabs === "object") {
-          for (let i = 0; i < newTabs.length; i++) {
-            await chrome.tabs.reload(newTabs[i].id);
-          }
+      const convertedImg = await convertImgUrlToBase64(favIconUrl);
+      await updateCards(titleInput.value, urlInput.value, convertedImg);
+      if (newTabs && typeof newTabs === "object") {
+        for (let i = 0; i < newTabs.length; i++) {
+          await chrome.tabs.reload(newTabs[i].id);
         }
-        window.close();
-      });
+      }
+      window.close();
     } else {
       alert("maxed capacity of cards");
     }

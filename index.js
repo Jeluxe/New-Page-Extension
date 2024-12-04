@@ -137,36 +137,6 @@ folderTitle.addEventListener('blur', () => {
   }
 })
 
-const downloadFile = () => {
-  const background = fetchData('background')
-  const cards = fetchData('cards')
-
-  const fileName = `${exportFileName.value.trim().length ? exportFileName.value.replaceAll('.', "") : 'config'}.json`;
-  const object = {};
-  if (background) {
-    object['background'] = background;
-  }
-  if (cards) {
-    object['cards'] = cards;
-  }
-
-  const jsonString = JSON.stringify(object, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" })
-
-  const blobUrl = URL.createObjectURL(blob);
-
-  const downloadLink = document.createElement('a');
-  downloadLink.style.display = "none";
-  downloadLink.href = blobUrl;
-  downloadLink.download = fileName;
-
-  document.body.appendChild(downloadLink)
-  downloadLink.click()
-  document.body.removeChild(downloadLink)
-
-  resetModal();
-}
-
 exportButton.addEventListener('click', downloadFile)
 
 bgInput.addEventListener("change", (e) => {

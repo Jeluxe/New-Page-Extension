@@ -534,18 +534,20 @@ const convertImgToBase64 = (image) => {
   });
 };
 
-const convertImgUrlToBase64 = (img, cb) => {
-  const xhr = new XMLHttpRequest();
-  xhr.onload = function () {
-    const reader = new FileReader();
-    reader.onloadend = function () {
-      cb(reader.result);
+const convertImgUrlToBase64 = (iconUrl) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(xhr.response);
     };
-    reader.readAsDataURL(xhr.response);
-  };
-  xhr.open("GET", img);
-  xhr.responseType = "blob";
-  xhr.send();
+    xhr.open("GET", iconUrl);
+    xhr.responseType = "blob";
+    xhr.send();
+  })
 };
 
 const isValidUrl = (url) => {
@@ -608,11 +610,31 @@ const errorMsgManager = (flag) => {
   }
 };
 
-const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null }) => {
+function formatURL(input) {
+  // Regular expression to check if the input is a domain
+  const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/;
+
+  // Check if the input is already a full URL
+  if (/^https?:\/\//i.test(input)) {
+    return input; // Return as-is if it starts with http:// or https://
+  }
+
+  // If it matches the domain regex, prepend https://
+  if (domainRegex.test(input)) {
+    return `https://${input}`;
+  }
+
+  // If it's not a valid domain or URL, throw an error or handle invalid cases
+  throw new Error('Invalid input: The provided string is neither a valid domain nor a full URL.');
+}
+
+const setData = async ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null }) => {
   if (!newTitle || !newUrl) {
     console.log('no title or url')
     return;
   }
+
+  newUrl = formatURL(newUrl);
 
   if (cardList === null) {
     cardList = fetchData("cards");
@@ -633,49 +655,57 @@ const setData = ({ newTitle, newUrl, newLogo = null, newColor = null, newPositio
       const folderElement = flag[1]?.parentNode;
 
       if (folderElement?.getAttribute('id') === 'folder-content') {
-        cardList = cardList.map((card) => {
-          if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
-            const updatedCards = card.cards.map(({ title, url, logo, color, position }) => {
-              if (Number(flag[1].getAttribute('position')) === position) {
-
-                return {
-                  title: newTitle || title,
-                  url: newUrl || url,
-                  logo: newLogo || logo,
-                  color: newColor || color,
-                  position: newPosition || position,
-                };
-              }
-              return card
-            })
-            return {
-              ...card,
-              cards: updatedCards
-            };
-          }
-          return card
-        });
+        cardList = await Promise.all(
+          cardList.map(async (card) => {
+            if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
+              const updatedCards = await Promise.all(
+                card.cards.map(async ({ title, url, logo, color, position }) => {
+                  if (Number(flag[1].getAttribute('position')) === position) {
+                    return {
+                      title: newTitle || title,
+                      url: newUrl || url,
+                      logo: newUrl && newUrl !== url ? await convertImgUrlToBase64(getIconURL(newUrl)) : logo,
+                      color: newColor || color,
+                      position: newPosition || position,
+                    };
+                  }
+                  return { title, url, logo, color, position }; // Return the original card data if no update is required
+                })
+              );
+              return {
+                ...card,
+                cards: updatedCards,
+              };
+            }
+            return card; // Return the original card if it's not a match
+          })
+        );
       } else {
-        cardList = cardList.map((element, idx) => {
-          if (cardsElement.children[idx] === flag[1] && element.type !== 'folder') {
-            const { title, url, logo, color, position } = element;
-            return {
-              title: newTitle || title,
-              url: newUrl || url,
-              logo,
-              color,
-              position: newPosition || position,
-            };
-          } else {
-            return element;
-          }
-        });
+        cardList = await Promise.all(
+          cardList.map(async (element, idx) => {
+            if (cardsElement.children[idx] === flag[1] && element.type !== 'folder') {
+              const { title, url, logo, color, position } = element;
+              return {
+                title: newTitle || title,
+                url: newUrl || url,
+                logo: newUrl && newUrl !== url ? await convertImgUrlToBase64(getIconURL(newUrl)) : logo,
+                color,
+                position: newPosition || position,
+              };
+            } else {
+              return element;
+            }
+          })
+        );
       }
       break;
   }
 
-  updateLocalStorage("cards", cardList);
+  await updateLocalStorage("cards", cardList);
+  renderCards(cardList);
 };
+
+const getIconURL = (url) => `https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=256`
 
 const resetModal = () => {
   if (!folderModal.classList.contains('hide') && cardModal.classList.contains('hide')) {// if folder modal is open and card modal is closed.
@@ -741,4 +771,46 @@ const stopModalPropagations = () => {
   const modals = document.getElementsByClassName("modal-wrapper");
 
   Array.from(modals).forEach(modal => modal.addEventListener("click", e => e.stopPropagation()))
+}
+
+const downloadFile = (popup = null) => {
+  const background = fetchData('background')
+  const cards = fetchData('cards')
+
+  const fileName = `${(!popup && exportFileName.value.trim().length) ?
+    exportFileName.value.replaceAll('.', "") :
+    `NPE_config${getCurrentDate()}`
+    }.json`;
+  const object = {};
+
+  if (background) {
+    object['background'] = background;
+  }
+  if (cards) {
+    object['cards'] = cards;
+  }
+
+  const jsonString = JSON.stringify(object, null, 2);
+  const blob = new Blob([jsonString], { type: "application/json" })
+  const blobUrl = URL.createObjectURL(blob);
+
+  const downloadLink = document.createElement('a');
+  downloadLink.style.display = "none";
+  downloadLink.href = blobUrl;
+  downloadLink.download = fileName;
+
+  document.body.appendChild(downloadLink)
+  downloadLink.click()
+  document.body.removeChild(downloadLink)
+
+  if (!popup) {
+    resetModal();
+  }
+}
+
+const getCurrentDate = () => {
+  const newDate = new Date();
+  let date = newDate.toLocaleDateString('en-GB').replaceAll('/', "_");
+  let time = newDate.toTimeString().split(" ")[0].replaceAll(":", "_");
+  return `${date}__${time}`
 }
