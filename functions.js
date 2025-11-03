@@ -708,16 +708,21 @@ const setData = async ({ newTitle, newUrl, newLogo = null, newColor = null, newP
 const getIconURL = (url) => `https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=256`
 
 const resetModal = () => {
-  if (!folderModal.classList.contains('hide') && cardModal.classList.contains('hide')) {// if folder modal is open and card modal is closed.
+  // if folder modal is open and card modal is closed.
+  if (!folderModal.classList.contains('hide') && cardModal.classList.contains('hide')) {
     folderTitle.value = "";
     folderContent.replaceChildren();
     folderModal.classList.add('hide');
     overlay.classList.add("hide");
-  } else if (!folderModal.classList.contains('hide')) {// if folder modal is open and card modal is open.
+  }
+  // if folder modal is open and card modal is open.
+  else if (!folderModal.classList.contains('hide')) {
     titleElement.value = "";
     urlElement.value = "";
     cardModal.classList.add("hide");
-  } else { // rest 
+  }
+  // rest 
+  else {
     titleElement.value = "";
     bgInput.value = "";
     urlElement.value = "";
