@@ -1,5 +1,6 @@
 const cardsElement = document.getElementById("cards");
 const overlay = document.getElementById("overlay");
+const overlay2 = document.getElementsByClassName("overlay2")[0];
 const background = document.getElementById("background");
 const [addFolder, backgroundButton, importExportButton] = Array.from(document.querySelector("#controls-wrapper").children);
 const cardModal = document.getElementsByClassName("card-modal-container")[0];
@@ -12,7 +13,7 @@ const bgArea = document.getElementById("bg-input-area");
 const bgFileName = document.querySelector("#bg-modal > .sections > .file-name");
 const backgroundModalButtons = document.querySelector('#bg-modal > .sections > .icons-wrap')
 const [successBgChangeButton, cancelBgChangeButton] = Array.from(backgroundModalButtons.children)
-const folderModal = document.getElementById("folder-modal-container");
+const folderModal = document.getElementsByClassName("folder-modal-container")[0];
 const folderTitle = document.getElementById("folder-title")
 const folderContent = document.getElementById("folder-content");
 const importExportModal = document.getElementsByClassName("import-export-modal-container")[0];
@@ -39,7 +40,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (!cardModal.classList.contains("hide")) {
+  if (!overlay2.classList.contains("hide")) {
     if (e.code === "Enter") {
       editCardData();
     }
@@ -49,7 +50,7 @@ document.addEventListener("keydown", (e) => {
 successEditModalButton.addEventListener('click', () => editCardData())
 cancelEditModalButton.addEventListener('click', () => resetModal())
 
-Array.from([overlay, cardModal]).forEach(el =>
+Array.from([overlay, overlay2]).forEach(el =>
   el.addEventListener("click", (e) => {
     (imgPreview) ? renderBackground() : "";
     resetModal()
@@ -165,14 +166,14 @@ backgroundButton.addEventListener("click", (e) => {
   bgModal.classList.toggle("hide");
   overlay.classList.remove("hide");
   importExportModal.classList.add("hide");
-  cardModal.classList.add("hide");
+  overlay2.classList.add("hide");
   folderModal.classList.add("hide");
 });
 
 importExportButton.addEventListener("click", (e) => {
   importExportModal.classList.toggle("hide");
   overlay.classList.remove("hide");
-  cardModal.classList.add("hide");
+  overlay2.classList.add("hide");
   bgModal.classList.add("hide");
   folderModal.classList.add("hide");
   notification.innerText = '';
@@ -217,7 +218,7 @@ addFolder.addEventListener('click', () => {
     return;
   } else {
     const result = createFolder(null);
-    (result) ? cardList.push({ type: 'folder', name: 'folder', cards: [], position: cardList.length }) : "";
+    (result) ? cardList.push({ type: 'folder', name: "", cards: [], position: cardList.length }) : "";
     updateLocalStorage("cards", cardList)
   }
 })
