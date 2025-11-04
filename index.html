@@ -17,12 +17,12 @@
     <!-- Page -->
     <div id="background">
         <div class="container">
-            <!-- tabs -->
+            <!-- Cards -->
             <div class="wrapper">
                 <div id="cards" class="cards"></div>
             </div>
-            <!-- X tabs X -->
-            <!-- controls -->
+            <!-- X Cards X -->
+            <!-- Controls -->
             <div class="controls-container">
                 <div id="controls-wrapper">
                     <div id="addFolder" class="controls ripple" aria-disabled="true">
@@ -64,11 +64,12 @@
                     </div>
                 </div>
             </div>
-            <!-- X controls X -->
+            <!-- X Controls X -->
             <div id="overlay" class="overlay hide">
                 <div class="modals-container">
-                    <!-- card modal -->
-                    <div class="card-modal-container hide">
+                    <!-- Card Modal -->
+<div class="overlay2 hide">
+                        <div class="card-modal-container modals-container hide">
                         <div id="modal" class="modal-wrapper">
                             <div class="sections">
                                 <div class="add-modal">
@@ -92,8 +93,9 @@
                             </div>
                         </div>
                     </div>
-                    <!-- X modal X -->
-                    <!-- background modal -->
+                    </div>
+                    <!-- X Card Modal X -->
+                    <!-- Background Modal -->
                     <div class="bg-modal-container hide">
                         <div id="bg-modal" class="modal-wrapper">
                             <div class="sections">
@@ -114,8 +116,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- X modal X -->
-                    <!-- import/export modal -->
+                    <!-- X Background Modal X -->
+                    <!-- Import/Export Modal -->
                     <div class="import-export-modal-container hide">
                         <div id="import-export-modal" class="modal-wrapper">
                             <div class="sections">
@@ -141,17 +143,19 @@
                             </div>
                         </div>
                     </div>
-                    <!-- X modal X -->
-                    <!-- folder modal -->
-                    <div id="folder-modal-container" class="hide">
-                        <div>
+                    <!-- X Import/Export Modal X -->
+                    <!-- Folder Modal -->
+                    <div class="folder-modal-container hide">
+                        <div id="folder-modal" class="modal-wrapper">
+                            <div class="folder-title-wrapper">
                             <input type="text" id="folder-title" />
                         </div>
                         <div id="folder-content-wrapper">
                             <div id="folder-content"></div>
                         </div>
                     </div>
-                    <!-- X modal X -->
+                    </div>
+                    <!-- X Folder Modal X -->
                 </div>
             </div>
         </div>
