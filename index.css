@@ -5,7 +5,7 @@ body {
 
 .card i,
 .card span {
-  color: rgba(255, 255, 255, 0.801);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 #background {
@@ -73,8 +73,8 @@ a:visited {
   height: 110px;
   border-radius: 5px;
   margin: 5px;
-  border: 1px solid black;
-  box-shadow: 0 0 3px 0.2px;
+  border: 1px solid rgba(50, 50, 50, 0.5);
+  box-shadow: 0 0 3px;
 }
 
 .folder-preview>#folder-content-wrapper>#folder-content>div {
@@ -86,10 +86,6 @@ a:visited {
   display: flex;
   flex-direction: column;
 }
-
-/* .card {
-  background-color: rgb(58, 58, 58);
-} */
 
 .folder-preview,
 .folder {
@@ -267,11 +263,13 @@ a:visited {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  box-shadow: 0 0 3px;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: rgba(206, 200, 200, 0.5);
 }
 
 .modal-wrapper {
-  background-color: rgba(255, 255, 255, 0.425);
-  border-radius: 5px;
   padding: 20px;
 }
 
@@ -299,11 +297,6 @@ a:visited {
 }
 
 #folder-modal-container {
-  border: 1px solid black;
-  box-shadow: 0 0 3px 0.2px;
-  background-color: rgba(206, 200, 200, 0.5);
-  border-radius: 5px;
-
   &>div:first-child {
     padding: 0 10px;
     background: inherit;
@@ -337,6 +330,7 @@ a:visited {
 
 #import-export-modal {
   display: flex;
+  column-gap: 2px;
 
   & .sections:first-child {
     width: 200px;
@@ -363,14 +357,6 @@ a:visited {
 
   & .file-name {
     font-size: 20px;
-  }
-
-  &:first-child {
-    border-right: 1px solid black;
-  }
-
-  &:last-child {
-    border-left: 1px solid black;
   }
 }
 
