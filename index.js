@@ -11,7 +11,7 @@ const bgModal = document.getElementsByClassName("bg-modal-container")[0];
 const bgInput = document.getElementById("bg-input");
 const bgArea = document.getElementById("bg-input-area");
 const bgFileName = document.querySelector("#bg-modal > .sections > .file-name");
-const backgroundModalButtons = document.querySelector('#bg-modal > .sections > .icons-wrap')
+const backgroundModalButtons = document.querySelector("#bg-modal > .sections > .icons-wrap")
 const [successBgChangeButton, cancelBgChangeButton] = Array.from(backgroundModalButtons.children)
 const folderModal = document.getElementsByClassName("folder-modal-container")[0];
 const folderTitle = document.getElementById("folder-title")
@@ -22,9 +22,9 @@ const exportFileName = document.getElementById("export-file-name");
 const importInput = document.getElementById("import-input");
 const importArea = document.getElementsByClassName("import-input-area")[0];
 const importFileName = document.querySelector("#import-export-modal > .sections > .file-name");
-const importModalButtons = document.querySelector('#import-export-modal > .sections > .icons-wrap')
+const importModalButtons = document.querySelector("#import-export-modal > .sections > .icons-wrap")
 const [successConfigModalButton, cancelConfigModalButton] = Array.from(importModalButtons.children)
-const notification = document.getElementById('notification');
+const notification = document.getElementById("notification");
 
 let cardList = [];
 let flag;
@@ -47,8 +47,8 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-successEditModalButton.addEventListener('click', () => editCardData())
-cancelEditModalButton.addEventListener('click', () => resetModal())
+successEditModalButton.addEventListener("click", () => editCardData())
+cancelEditModalButton.addEventListener("click", () => resetModal())
 
 Array.from([overlay, overlay2]).forEach(el =>
   el.addEventListener("click", (e) => {
@@ -64,16 +64,16 @@ overlay.addEventListener("dragover", (e) => {
 overlay.addEventListener("drop", dropFromFolderEvent)
 
 Array.from([bgArea, importArea]).forEach(el =>
-  el.addEventListener('dragover', (e) => {
+  el.addEventListener("dragover", (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    el.classList.add('drag-over');
+    el.classList.add("drag-over");
   }));
 
 Array.from([bgArea, importArea]).forEach(el =>
-  el.addEventListener('drop', (e) => {
+  el.addEventListener("drop", (e) => {
     e.preventDefault();
-    el.classList.remove('drag-over');
+    el.classList.remove("drag-over");
 
     var files = e.dataTransfer.files;
 
@@ -81,8 +81,8 @@ Array.from([bgArea, importArea]).forEach(el =>
   }));
 
 Array.from([bgArea, importArea]).forEach(el =>
-  el.addEventListener('dragleave', () => {
-    el.classList.remove('drag-over');
+  el.addEventListener("dragleave", () => {
+    el.classList.remove("drag-over");
   }));
 
 
@@ -92,8 +92,8 @@ Array.from([cardModal, folderModal, importExportModal, bgModal]).forEach(modal =
   }))
 
 cancelBgChangeButton.addEventListener("click", () => {
-  bgArea.classList.remove('hide')
-  backgroundModalButtons.classList.add('hide')
+  bgArea.classList.remove("hide")
+  backgroundModalButtons.classList.add("hide")
   bgFileName.innerText = "";
   renderBackground()
 });
@@ -104,8 +104,8 @@ successBgChangeButton.addEventListener("click", () => {
 });
 
 cancelConfigModalButton.addEventListener("click", () => {
-  importArea.classList.remove('hide')
-  importModalButtons.classList.add('hide')
+  importArea.classList.remove("hide")
+  importModalButtons.classList.add("hide")
 
   importFileName.innerText = "";
   configData = null;
@@ -115,15 +115,15 @@ successConfigModalButton.addEventListener("click", () => {
   if (configData) {
     validateDataFromFile(configData);
   } else {
-    console.log('Some of the data is not valid!')
+    console.log("Some of the data is not valid!")
   }
   resetModal();
 });
 
-folderTitle.addEventListener('blur', () => {
+folderTitle.addEventListener("blur", () => {
   if (savedFolderPosition) {
     const updatedCards = cardList.map(card => {
-      if (card.position === Number(savedFolderPosition) && card.type === 'folder') {
+      if (card.position === Number(savedFolderPosition) && card.type === "folder") {
         return {
           ...card,
           name: folderTitle.value,
@@ -138,7 +138,7 @@ folderTitle.addEventListener('blur', () => {
   }
 })
 
-exportButton.addEventListener('click', downloadFile)
+exportButton.addEventListener("click", downloadFile)
 
 bgInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -150,12 +150,12 @@ bgInput.addEventListener("change", (e) => {
       imgPreview = image;
     });
     bgFileName.innerText = file.name;
-    bgArea.classList.add('hide');
-    backgroundModalButtons.classList.remove('hide');
+    bgArea.classList.add("hide");
+    backgroundModalButtons.classList.remove("hide");
   }
 });
 
-importInput.addEventListener('change', (e) => {
+importInput.addEventListener("change", (e) => {
   notification.innerText = ""
   const file = e.target.files[0];
 
@@ -176,7 +176,7 @@ importExportButton.addEventListener("click", (e) => {
   overlay2.classList.add("hide");
   bgModal.classList.add("hide");
   folderModal.classList.add("hide");
-  notification.innerText = '';
+  notification.innerText = "";
 });
 
 folderContent.addEventListener("dragstart", (e) => {
@@ -189,7 +189,7 @@ folderContent.addEventListener("dragover", (e) => {
   e.dataTransfer.dropEffect = "move";
 });
 
-folderContent.addEventListener('drop', async (e) => {
+folderContent.addEventListener("drop", async (e) => {
   e.stopPropagation()
 
   if (e.target !== folderContent) {
@@ -212,13 +212,13 @@ folderContent.addEventListener('drop', async (e) => {
   }
 })
 
-addFolder.addEventListener('click', () => {
+addFolder.addEventListener("click", () => {
   if (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20) {
-    console.log('cards capacity is full')
+    console.log("cards capacity is full")
     return;
   } else {
     const result = createFolder(null);
-    (result) ? cardList.push({ type: 'folder', name: "", cards: [], position: cardList.length }) : "";
+    (result) ? cardList.push({ type: "folder", name: "", cards: [], position: cardList.length }) : "";
     updateLocalStorage("cards", cardList)
   }
 })

@@ -14,7 +14,7 @@ const renderBackground = (bg) => {
 }
 
 const getCards = () => {
-  const cards = document.getElementById('cards')
+  const cards = document.getElementById("cards")
   return Array.from(cards.children)
 }
 
@@ -34,7 +34,7 @@ const renderCards = async (cards) => {
       }
 
       if (cardList[j].position === i) {
-        if (cardList[j].type === 'folder') {
+        if (cardList[j].type === "folder") {
           createFolder(cardList[j])
 
           break;
@@ -97,51 +97,51 @@ const createCard = ({ title, url, logo = null, color, position = null }) => {
 };
 
 const openFolder = (e) => {
-  overlay.classList.remove('hide')
-  const target = getFolder(e.target)
-  const targetPos = target.getAttribute('position')
-  savedFolderPosition = targetPos
-  const foundFolder = cardList.find(card => card.position === Number(targetPos))
+  overlay.classList.remove("hide");
+  const target = getFolder(e.target);
+  const targetPos = target.getAttribute("position");
+  savedFolderPosition = targetPos;
+  const foundFolder = cardList.find(card => card.position === Number(targetPos));
 
   folderTitle.value = foundFolder.name;
   foundFolder?.cards.forEach(card => {
-    const newCard = createCard(card)
-    folderContent.append(newCard)
-  })
+    const newCard = createCard(card);
+    folderContent.append(newCard);
+  });
 
-  folderModal.classList.remove('hide')
+  folderModal.classList.remove("hide");
 }
 
 const removeFolderAndUpdate = (folderToRemove, folderPos) => {
-  folderToRemove.remove()
-  const updatedCards = cardList.filter(card => card.position !== Number(folderPos) ? card : "")
-  const repositionedCards = repositionCards(updatedCards)
+  folderToRemove.remove();
+  const updatedCards = cardList.filter(card => card.position !== Number(folderPos) ? card : "");
+  const repositionedCards = repositionCards(updatedCards);
 
   updateLocalStorage("cards", repositionedCards);
-  renderCards(repositionedCards)
+  renderCards(repositionedCards);
 }
 
 const createFolder = (data = null) => {
   if (data?.position >= 20 || (cardList.length >= 20 && Array.from(cardsElement.children).length >= 20)) {
-    console.log('cards capacity is full')
+    console.log("cards capacity is full")
     return null;
   }
   const position = data?.position ?? cardList.length
 
-  const folder = document.createElement('div');
-  const folderWrapper = document.createElement('div')
+  const folder = document.createElement("div");
+  const folderWrapper = document.createElement("div")
   const buttonsDiv = document.createElement("div");
   const removeButton = document.createElement("i");
 
-  folder.classList.add('folder-preview');
-  folderWrapper.classList.add('folder-wrapper');
-  folder.setAttribute('position', position)
-  folder.setAttribute('draggable', true)
+  folder.classList.add("folder-preview");
+  folderWrapper.classList.add("folder-wrapper");
+  folder.setAttribute("position", position)
+  folder.setAttribute("draggable", true)
 
-  const folderPreviewTitle = document.createElement('div');
+  const folderPreviewTitle = document.createElement("div");
   folderPreviewTitle.innerHTML = data?.name || "folder"
-  folderPreviewTitle.classList.add('folder-preview-title');
-  folderPreviewTitle.setAttribute('draggable', false)
+  folderPreviewTitle.classList.add("folder-preview-title");
+  folderPreviewTitle.setAttribute("draggable", false)
   folderWrapper.appendChild(folderPreviewTitle)
 
   Array.from([buttonsDiv, removeButton]).forEach((element) => {
@@ -155,14 +155,14 @@ const createFolder = (data = null) => {
   buttonsDiv.classList.add("button-group");
   removeButton.classList.add("fas", "fa-times", "remove");
 
-  removeButton.addEventListener('click', (e) => {
+  removeButton.addEventListener("click", (e) => {
     e.stopPropagation();
 
     const folderToRemove = e.target.parentNode.parentNode;
-    const folderPos = folderToRemove.getAttribute('position')
+    const folderPos = folderToRemove.getAttribute("position")
 
-    if (folderToRemove.querySelector('.folder-container').children.length) {
-      if (confirm('you have cards inside the folder, are you sure you want to delete the folder?')) {
+    if (folderToRemove.querySelector(".folder-container").children.length) {
+      if (confirm("you have cards inside the folder, are you sure you want to delete the folder?")) {
         removeFolderAndUpdate(folderToRemove, folderPos)
       }
     } else {
@@ -173,13 +173,13 @@ const createFolder = (data = null) => {
   buttonsDiv.appendChild(removeButton);
 
 
-  const container = document.createElement('div');
-  container.classList.add('folder-container')
+  const container = document.createElement("div");
+  container.classList.add("folder-container")
 
   if (data?.cards?.length) {
     data.cards.forEach(card => {
       const logo = document.createElement("img");
-      const itemPreview = document.createElement('div');
+      const itemPreview = document.createElement("div");
 
       logo.src = card.logo;
       logo.width = 40;
@@ -194,17 +194,17 @@ const createFolder = (data = null) => {
 
   folderWrapper.appendChild(container);
 
-  folder.addEventListener('click', (e) => {
+  folder.addEventListener("click", (e) => {
     e.stopPropagation()
     openFolder(e)
   })
 
-  folder.addEventListener('dragover', (e) => {
+  folder.addEventListener("dragover", (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   });
 
-  folder.addEventListener('drop', (e) => {
+  folder.addEventListener("drop", (e) => {
     e.stopPropagation()
 
     folderDropEvent(e, container)
@@ -222,8 +222,8 @@ const extractDataFromFile = (file) => {
   if (file.size * 2 >= 4000000) {
     notification.innerText = "image file size is too big, it will NOT be saved!";
     return;
-  } else if (file.type !== 'application/json' || file.name.split('.').at(-1) !== 'json') {
-    notification.innerText = 'not valid file type';
+  } else if (file.type !== "application/json" || file.name.split(".").at(-1) !== "json") {
+    notification.innerText = "not valid file type";
   } else {
     const reader = new FileReader();
 
@@ -231,14 +231,14 @@ const extractDataFromFile = (file) => {
       const fileContent = e.target.result;
       const fileContentJson = JSON.parse(fileContent)
 
-      if (Object.keys(fileContentJson).includes('background') || Object.keys(fileContentJson).includes('cards')) {
-        importArea.classList.add('hide')
-        importModalButtons.classList.remove('hide')
+      if (Object.keys(fileContentJson).includes("background") || Object.keys(fileContentJson).includes("cards")) {
+        importArea.classList.add("hide")
+        importModalButtons.classList.remove("hide")
 
         importFileName.innerText = file.name;
         configData = fileContentJson;
       } else {
-        notification.innerText = 'not allowed content!'
+        notification.innerText = "not allowed content!"
       }
     }
     reader.readAsText(file)
@@ -257,14 +257,14 @@ const validateDataFromFile = (data) => {
     renderCards(data?.cards)
     renderBackground(data?.background)
   } else {
-    console.log('Something went wrong with the data provided!')
+    console.log("Something went wrong with the data provided!")
   }
 }
 
 const getFolder = (target) => {
-  return target.classList.contains('folder-preview') ?
+  return target.classList.contains("folder-preview") ?
     target :
-    target.parentNode.classList.contains('folder-preview') ?
+    target.parentNode.classList.contains("folder-preview") ?
       target.parentNode :
       target.parentNode.parentNode;
 }
@@ -273,11 +273,11 @@ const folderDropEvent = (e, container = null) => {
   e.preventDefault()
 
   if (!container) {
-    container = (e.target.classList.contains('folder-container')) ? e.target : Array.from(e.target.children)[1]
+    container = (e.target.classList.contains("folder-container")) ? e.target : Array.from(e.target.children)[1]
   }
 
   if (Array.from(container.children).length === 8) {
-    console.log('folder capactiy is maxed')
+    console.log("folder capactiy is maxed")
     return;
   }
 
@@ -290,35 +290,35 @@ const folderDropEvent = (e, container = null) => {
     const cardsElement = document.getElementById("cards")
     let src = cardsElement.children[srcPos];
 
-    if (src.classList.contains('folder-preview')) {
+    if (src.classList.contains("folder-preview")) {
       swapElementSpots({ src, target, cardsElement });
 
       cardList = swapCardsData(srcPos, targetPos, cardList)
       repositionElements()
     } else {
       const child = cardsElement.removeChild(src);
-      child.classList.remove('card')
-      child.removeAttribute('position')
+      child.classList.remove("card")
+      child.removeAttribute("position")
 
-      const itemPreview = document.createElement('div');
+      const itemPreview = document.createElement("div");
       itemPreview.style.pointerEvents = "none"
 
       const logoDiv = Array.from(child.children)[0]
       const logo = Array.from(logoDiv.children)[0]
-      logo.style.pointerEvents = 'none'
+      logo.style.pointerEvents = "none"
 
       const items = [itemPreview, logo]
-      items.forEach(element => element.setAttribute('draggable', false))
+      items.forEach(element => element.setAttribute("draggable", false))
 
       itemPreview.appendChild(logo)
       container.appendChild(itemPreview)
 
       getCards().forEach((element, idx) => {
-        element.setAttribute('position', idx)
+        element.setAttribute("position", idx)
       })
 
       const foundCard = cardList.find(card => card.position === Number(srcPos))
-      const foundFolder = cardList.find(card => card.position === Number(targetPos) && card.type === 'folder')
+      const foundFolder = cardList.find(card => card.position === Number(targetPos) && card.type === "folder")
 
       if (!foundCard || !foundFolder) {
         return;
@@ -339,7 +339,7 @@ const folderDropEvent = (e, container = null) => {
 }
 
 const dropFromFolderEvent = e => {
-  if (e.target.classList.contains('overlay')) {
+  if (e.target.classList.contains("overlay")) {
     const srcPos = Number(e.dataTransfer.getData("src"));
     if (cardList.length === 20 && cardsElement.children.length === 20) {
       console.log("no space to drop")
@@ -355,7 +355,7 @@ const dropFromFolderEvent = e => {
     cardList.push(foundCard);
 
     const updatedCardsList = cardList.map((card) => {
-      if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
+      if (card.type === "folder" && card.position === Number(savedFolderPosition)) {
         return {
           ...card,
           cards: repositionCards(card.cards.filter(card => card.position !== srcPos))
@@ -382,7 +382,7 @@ const dropEvent = (e, list, cardsElement) => {
     return;
   }
 
-  if (!target.classList.contains('card') && !target.classList.contains('folder-preview')) {
+  if (!target.classList.contains("card") && !target.classList.contains("folder-preview")) {
     return;
   }
 
@@ -393,9 +393,9 @@ const dropEvent = (e, list, cardsElement) => {
     let src = cardsElement.childNodes[srcPos];
     swapElementSpots({ src, target, srcPos, targetPos, cardsElement, list });
 
-    const buttons = target.querySelector('.button-group');
-    const removeButton = target.querySelector('.remove');
-    const editButton = target.querySelector('.edit');
+    const buttons = target.querySelector(".button-group");
+    const removeButton = target.querySelector(".remove");
+    const editButton = target.querySelector(".edit");
     const buttonsList = [buttons, removeButton, editButton]
     buttonsList.forEach((element) => (element.style.pointerEvents = "auto"));
     repositionElements();
@@ -412,12 +412,12 @@ const swapElementSpots = ({ src, target, srcPos = null, targetPos = null, cardsE
 
   const replacelist = [srcChild, targetChild];
   replacelist.forEach(elem => {
-    elem.addEventListener('drop',
+    elem.addEventListener("drop",
       (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (elem.classList.contains('folder-preview')) {
+        if (elem.classList.contains("folder-preview")) {
           folderDropEvent(e)
         } else {
           dropEvent(e, list, cardsElement)
@@ -457,7 +457,7 @@ const sortCards = (list) => {
 
 const repositionCards = (list) => {
   return list.map((card, i) => {
-    if (card.type === 'folder') {
+    if (card.type === "folder") {
       const cards = card.cards?.map((fcard, j) => ({ ...fcard, position: j }))
       return {
         ...card,
@@ -470,17 +470,17 @@ const repositionCards = (list) => {
   })
 }
 
-const repositionElements = () => Array.from(cardsElement.children).forEach((elem, i) => elem.setAttribute('position', i))
+const repositionElements = () => Array.from(cardsElement.children).forEach((elem, i) => elem.setAttribute("position", i))
 
 const removeEvent = (e) => {
   e.preventDefault();
 
   const element = e.target.parentNode.parentNode;
-  const elementPos = Number(element.getAttribute('position'))
-  const isParentFolder = element.parentNode.getAttribute('id')
+  const elementPos = Number(element.getAttribute("position"))
+  const isParentFolder = element.parentNode.getAttribute("id")
 
   let updatedCards = cardList.map((card) => {
-    if (card.position === Number(savedFolderPosition) && card.type === 'folder') {
+    if (card.position === Number(savedFolderPosition) && card.type === "folder") {
       const cards = card.cards.filter(fcard => (fcard.position !== elementPos) ? card : "")
 
       return {
@@ -492,7 +492,7 @@ const removeEvent = (e) => {
     }
   })
 
-  if (isParentFolder !== 'folder-content') {
+  if (isParentFolder !== "folder-content") {
     updatedCards = updatedCards.filter(card => (card.position !== elementPos) ? card : "");
   }
 
@@ -515,6 +515,7 @@ const editEvent = (e) => {
   let target = e.target.parentElement.parentElement;
   flag = ["editCard", target];
   overlay.classList.remove("hide");
+  overlay2.classList.remove("hide");
   cardModal.classList.remove("hide");
   titleElement.value = target.querySelector(".bottom-title").innerHTML;
   urlElement.value = target.href;
@@ -624,13 +625,13 @@ function formatURL(input) {
     return `https://${input}`;
   }
 
-  // If it's not a valid domain or URL, throw an error or handle invalid cases
-  throw new Error('Invalid input: The provided string is neither a valid domain nor a full URL.');
+  // If it"s not a valid domain or URL, throw an error or handle invalid cases
+  throw new Error("Invalid input: The provided string is neither a valid domain nor a full URL.");
 }
 
 const setData = async ({ newTitle, newUrl, newLogo = null, newColor = null, newPosition = null }) => {
   if (!newTitle || !newUrl) {
-    console.log('no title or url')
+    console.log("no title or url")
     return;
   }
 
@@ -654,13 +655,13 @@ const setData = async ({ newTitle, newUrl, newLogo = null, newColor = null, newP
     case "editCard":
       const folderElement = flag[1]?.parentNode;
 
-      if (folderElement?.getAttribute('id') === 'folder-content') {
+      if (folderElement?.getAttribute("id") === "folder-content") {
         cardList = await Promise.all(
           cardList.map(async (card) => {
-            if (card.type === 'folder' && card.position === Number(savedFolderPosition)) {
+            if (card.type === "folder" && card.position === Number(savedFolderPosition)) {
               const updatedCards = await Promise.all(
                 card.cards.map(async ({ title, url, logo, color, position }) => {
-                  if (Number(flag[1].getAttribute('position')) === position) {
+                  if (Number(flag[1].getAttribute("position")) === position) {
                     return {
                       title: newTitle || title,
                       url: newUrl || url,
@@ -677,13 +678,13 @@ const setData = async ({ newTitle, newUrl, newLogo = null, newColor = null, newP
                 cards: updatedCards,
               };
             }
-            return card; // Return the original card if it's not a match
+            return card; // Return the original card if it"s not a match
           })
         );
       } else {
         cardList = await Promise.all(
           cardList.map(async (element, idx) => {
-            if (cardsElement.children[idx] === flag[1] && element.type !== 'folder') {
+            if (cardsElement.children[idx] === flag[1] && element.type !== "folder") {
               const { title, url, logo, color, position } = element;
               return {
                 title: newTitle || title,
@@ -709,16 +710,17 @@ const getIconURL = (url) => `https://s2.googleusercontent.com/s2/favicons?domain
 
 const resetModal = () => {
   // if folder modal is open and card modal is closed.
-  if (!folderModal.classList.contains('hide') && cardModal.classList.contains('hide')) {
+  if (!folderModal.classList.contains("hide") && overlay2.classList.contains("hide")) {
     folderTitle.value = "";
     folderContent.replaceChildren();
-    folderModal.classList.add('hide');
+    folderModal.classList.add("hide");
     overlay.classList.add("hide");
   }
   // if folder modal is open and card modal is open.
-  else if (!folderModal.classList.contains('hide')) {
+  else if (!folderModal.classList.contains("hide")) {
     titleElement.value = "";
     urlElement.value = "";
+    overlay2.classList.add("hide");
     cardModal.classList.add("hide");
   }
   // rest 
@@ -732,11 +734,13 @@ const resetModal = () => {
     notification.innerHTML = "";
     exportFileName.value = "";
     bgModal.classList.add("hide");
-    bgArea.classList.remove('hide');
-    backgroundModalButtons.classList.add('hide');
+    bgArea.classList.remove("hide");
+    backgroundModalButtons.classList.add("hide");
     importExportModal.classList.add("hide");
     importArea.classList.remove("hide");
     importModalButtons.classList.add("hide");
+    tabGroupsModal.classList.add("hide");
+    overlay2.classList.add("hide");
     cardModal.classList.add("hide");
     imgPreview = null;
     flag = null;
@@ -746,16 +750,16 @@ const resetModal = () => {
 };
 
 const makeTextInputUndroppable = () => {
-  const textInputs = document.querySelectorAll('input[type=text]')
+  const textInputs = document.querySelectorAll("input[type=text]")
 
   Array.from(textInputs).forEach(elem => {
-    elem.addEventListener('drop', (e) => e.preventDefault())
+    elem.addEventListener("drop", (e) => e.preventDefault())
   })
 }
 
 const toCamelCase = (inputString) => {
   // Remove non-alphanumeric characters and split the string into words
-  const words = inputString.replace(/[^a-zA-Z0-9]/g, ' ').split(' ');
+  const words = inputString.replace(/[^a-zA-Z0-9]/g, " ").split(" ");
 
   // Capitalize the first letter of each word (except the first word)
   const camelCaseWords = words.map((word, index) => {
@@ -767,7 +771,7 @@ const toCamelCase = (inputString) => {
   });
 
   // Join the words to form the camel case string
-  const camelCaseString = camelCaseWords.join(' ');
+  const camelCaseString = camelCaseWords.join(" ");
 
   return camelCaseString;
 }
@@ -779,27 +783,27 @@ const stopModalPropagations = () => {
 }
 
 const downloadFile = (popup = null) => {
-  const background = fetchData('background')
-  const cards = fetchData('cards')
+  const background = fetchData("background")
+  const cards = fetchData("cards")
 
   const fileName = `${(!popup && exportFileName.value.trim().length) ?
-    exportFileName.value.replaceAll('.', "") :
+    exportFileName.value.replaceAll(".", "") :
     `NPE_config${getCurrentDate()}`
     }.json`;
   const object = {};
 
   if (background) {
-    object['background'] = background;
+    object["background"] = background;
   }
   if (cards) {
-    object['cards'] = cards;
+    object["cards"] = cards;
   }
 
   const jsonString = JSON.stringify(object, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" })
   const blobUrl = URL.createObjectURL(blob);
 
-  const downloadLink = document.createElement('a');
+  const downloadLink = document.createElement("a");
   downloadLink.style.display = "none";
   downloadLink.href = blobUrl;
   downloadLink.download = fileName;
@@ -815,7 +819,7 @@ const downloadFile = (popup = null) => {
 
 const getCurrentDate = () => {
   const newDate = new Date();
-  let date = newDate.toLocaleDateString('en-GB').replaceAll('/', "_");
+  let date = newDate.toLocaleDateString("en-GB").replaceAll("/", "_");
   let time = newDate.toTimeString().split(" ")[0].replaceAll(":", "_");
   return `${date}__${time}`
 }
