@@ -6,10 +6,10 @@ let exportBtn = document.getElementById("export");
 let tempFavIconUrl;
 let cardList;
 
-const maxCardsInList = 20;
-const maxCardsInFolder = 8;
-const newTabUrl = "edge://newtab/";
-const cardDefaultColor = "rgba(58, 58, 58, 0.425)";
+const MAX_CARDS = 20;
+const FOLDER_MAX_CARDS = 8;
+const NEW_TAB_URL = "edge://newtab/";
+const CARD_DEFAULT_COLOR = "rgba(58, 58, 58, 0.425)";
 
 titleInput?.addEventListener("keyup", (e) => (titleInput.value = e.target.value));
 urlInput?.addEventListener("keyup", (e) => (urlInput.value = e.target.value));
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const newTabs = await getNewTab();
 
   button.addEventListener("click", async (e) => {
-    if (cardList.length < maxCardsInList || cardList[folderSelectionDropdown.value].cards.length < maxCardsInFolder) {
+    if (cardList.length < MAX_CARDS || cardList[folderSelectionDropdown.value].cards.length < FOLDER_MAX_CARDS) {
       const convertedImg = await convertImgUrlToBase64(favIconUrl);
       await updateCards(titleInput.value, urlInput.value, convertedImg);
       if (newTabs && typeof newTabs === "object") {
@@ -43,14 +43,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
-  if (tab.url === newTabUrl) {
+  if (tab.url === NEW_TAB_URL) {
     return { index: tab.index, title: "", url: "", favIconUrl: "" };
   }
   return tab;
 }
 
 async function getNewTab() {
-  let queryOptions = { url: newTabUrl };
+  let queryOptions = { url: NEW_TAB_URL };
   let tabs = await chrome.tabs.query(queryOptions);
   return tabs;
 }
@@ -67,7 +67,7 @@ const createOptions = (cardList) => {
 const createOption = (item) => {
   const newOption = document.createElement("option")
   newOption.setAttribute("value", item.position);
-  newOption.disabled = item.cards.length === maxCardsInFolder;
+  newOption.disabled = item.cards.length === FOLDER_MAX_CARDS;
   newOption.innerText = toCamelCase(item.name)
   return newOption
 }
@@ -78,7 +78,7 @@ const updateCards = async (title, url, logo) => {
     title,
     url,
     logo,
-    color: cardDefaultColor,
+    color: CARD_DEFAULT_COLOR,
     position: cardList.length ?
       selectFolderPos ?
         cardList[selectFolderPos].cards.length :

@@ -1,5 +1,5 @@
 :root {
-  --semi-transparent-white: rgba(255, 255, 255, 0.5);
+  --semi-transparent-white: rgba(255, 255, 255, 0.75);
   --semi-transparent-gray: rgba(200, 200, 200, 0.5);
   --semi-transparent-dark-gray: rgba(128, 128, 128, 0.5);
 }
@@ -177,16 +177,28 @@ a:visited {
   visibility: visible;
 }
 
+.card>.button-group>i:hover,
+.folder-preview>.button-group>i:hover {
+  color: #494949;
+}
+
+.card>.button-group>i:active,
+.folder-preview>.button-group>i:active {
+  color: #323232;
+}
+
 .controls {
   display: flex;
   justify-items: center;
-  gap: 10px;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   background-color: var(--semi-transparent-gray);
   padding: 0.7rem;
   margin: 5px;
   border-radius: 5px;
   cursor: pointer;
+  user-select: none;
 }
 
 .controls-container {
@@ -347,7 +359,7 @@ a:visited {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  background-color: aliceblue;
+  background-color: var(--semi-transparent-white);
   border-radius: 5px;
   padding: 40px;
 
