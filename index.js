@@ -70,14 +70,18 @@ Array.from([bgArea, importArea]).forEach(el =>
     el.classList.add("drag-over");
   }));
 
-Array.from([bgArea, importArea]).forEach(el =>
+Array.from([bgArea, importArea]).forEach((el, idx) =>
   el.addEventListener("drop", (e) => {
     e.preventDefault();
     el.classList.remove("drag-over");
 
-    var files = e.dataTransfer.files;
+    const file = e.dataTransfer.files[0];
 
-    extractDataFromFile(files[0])
+    if (idx === 0) {
+      handleImage(file);
+    } else {
+      extractDataFromFile(file);
+    }
   }));
 
 Array.from([bgArea, importArea]).forEach(el =>
@@ -143,19 +147,7 @@ folderTitle.addEventListener("blur", () => {
 exportButton.addEventListener("click", downloadFile)
 
 bgInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file.size >= 3000000) {
-    alert("image file size is too big, it will NOT be saved!");
-    return;
-  } else {
-    convertImgToBase64(file).then((image) => {
-      imgPreview = image;
-    });
-    bgFileName.innerText = file.name;
-    bgArea.classList.add("hide");
-    backgroundModalButtons.classList.remove("hide");
-    overlay.style.backdropFilter = "none";
-  }
+  handleImage(e.target.files[0]);
 });
 
 importInput.addEventListener("change", (e) => {

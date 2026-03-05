@@ -219,10 +219,11 @@ const createFolder = (data = null) => {
 
 const extractDataFromFile = (file) => {
   clearTimeout(timeout)
+  notification.innerText = "";
+
   if (file.size * 2 >= 4000000) {
     notification.innerText = "image file size is too big, it will NOT be saved!";
-    return;
-  } else if (file.type !== "application/json" || file.name.split(".").at(-1) !== "json") {
+  } else if (file.type !== "application/json" && file.name.split(".").at(-1) !== "json") {
     notification.innerText = "not valid file type";
   } else {
     const reader = new FileReader();
@@ -519,6 +520,27 @@ const editEvent = (e) => {
   cardModal.classList.remove("hide");
   titleElement.value = target.querySelector(".bottom-title").innerHTML;
   urlElement.value = target.href;
+}
+
+const handleImage = (file) => {
+  const VALID_IMG_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+  const VALID_IMG_FILE_EXTENSIONS = ["png", "jpg", "jpeg"];
+
+  if (file.size >= 3000000) {
+    alert("image file size is too big, it will NOT be saved!");
+  }
+  else if (!VALID_IMG_FILE_TYPES.includes(file.type) && !VALID_IMG_FILE_EXTENSIONS.includes(file.name.split(".").at(-1))) {
+    alert("not valid file type!");
+  }
+  else {
+    convertImgToBase64(file).then((image) => {
+      imgPreview = image;
+    });
+    bgFileName.innerText = file.name;
+    bgArea.classList.add("hide");
+    backgroundModalButtons.classList.remove("hide");
+    overlay.style.backdropFilter = "none";
+  }
 }
 
 const convertImgToBase64 = (image) => {
