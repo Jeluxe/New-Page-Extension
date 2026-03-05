@@ -95,11 +95,13 @@ cancelBgChangeButton.addEventListener("click", () => {
   bgArea.classList.remove("hide")
   backgroundModalButtons.classList.add("hide")
   bgFileName.innerText = "";
-  renderBackground()
+  overlay.style.backdropFilter = "blur(3px)";
+  renderBackground();
 });
 
 successBgChangeButton.addEventListener("click", () => {
   updateLocalStorage("background", imgPreview);
+  overlay.style.backdropFilter = "blur(3px)";
   resetModal();
 });
 
@@ -152,6 +154,7 @@ bgInput.addEventListener("change", (e) => {
     bgFileName.innerText = file.name;
     bgArea.classList.add("hide");
     backgroundModalButtons.classList.remove("hide");
+    overlay.style.backdropFilter = "none";
   }
 });
 

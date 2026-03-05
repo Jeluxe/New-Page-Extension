@@ -102,6 +102,10 @@
                                 <div class="section-title">Background Import</div>
                                 <label id="bg-input-area" class="input-area" for="bg-input">
                                     <div id="text-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20px">
+                                        <path
+                                            d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32S0 334.3 0 352l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z" />
+                                    </svg>
                                         <span>Drag and Drop</span>
                                         <span>or Browse file here</span>
                                     </div>
@@ -124,6 +128,10 @@
                                 <div class="section-title">Config Import</div>
                                 <label class="import-input-area  input-area" for="import-input">
                                     <div id="text-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                        <path
+                                            d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32S0 334.3 0 352l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z" />
+                                    </svg>
                                         <span>Drag and Drop</span>
                                         <span>or Browse file here</span>
                                     </div>
@@ -138,8 +146,18 @@
                             </div>
                             <div class="sections">
                                 <div class="section-title">Config Export</div>
-                                <input type="text" id="export-file-name" title="export file name" />
-                                <button id="export-button">export</button>
+                            <div>
+                                <input type="text" id="export-file-name" title="export file name"
+                                    placeholder="Type File Name Here..." />
+                                <span>** If you won't name it, it will give date as file name automatically!</span>
+                            </div>
+                            <button id="export-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                    <path
+                                        d="M384 121.9c0-6.3-2.5-12.4-7-16.9L279.1 7c-4.5-4.5-10.6-7-17-7H256v128h128zM571 308l-95.7-96.4c-10.1-10.1-27.4-3-27.4 11.3V288h-64v64h64v65.2c0 14.3 17.3 21.4 27.4 11.3L571 332c6.6-6.6 6.6-17.4 0-24zm-379 28v-32c0-8.8 7.2-16 16-16h176V160H248c-13.2 0-24-10.8-24-24V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V352H208c-8.8 0-16-7.2-16-16z" />
+                                </svg>
+                                export
+                            </button>
                             </div>
                         </div>
                     </div>

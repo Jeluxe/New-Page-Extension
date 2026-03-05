@@ -350,6 +350,21 @@ a:visited {
   & .sections:first-child {
     width: 200px;
   }
+
+  & .sections:last-child {
+    justify-content: flex-start;
+    gap: 10px;
+
+    &>:nth-child(2) {
+      line-break: anywhere;
+      width: 220px;
+      color: blueviolet;
+    }
+  }
+
+  & svg {
+    width: 20px;
+  }
 }
 
 .sections {
@@ -372,6 +387,8 @@ a:visited {
 
   & .file-name {
     font-size: 20px;
+    line-break: anywhere;
+    width: 220px;
   }
 }
 
@@ -400,12 +417,39 @@ a:visited {
       color: blue;
     }
 
-    & span:first-child {
+    & span:first-of-type {
       color: black;
       font-size: large;
       font-weight: 800;
     }
   }
+}
+
+#export-file-name {
+  border: 2px dashed blueviolet;
+  border-radius: 5px;
+  background: none;
+  outline: 0;
+  padding: 3px 10px;
+  font-size: 1.3em;
+  width: auto;
+  margin-top: 20px;
+}
+
+#export-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: .6em;
+  width: 150px;
+  height: 40px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: rgb(90 97 255);
+  font-weight: 700;
+  font-size: 1.33em;
+  cursor: pointer;
 }
 
 #file-content {
