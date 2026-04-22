@@ -49,8 +49,22 @@ const renderCards = async (cards) => {
   }
 };
 
-const createCard = ({ title, url, logo = null, color, position = null }) => {
+const createCard = ({ title, url, logo = null, color, position = null, incognito = false }) => {
   const card = document.createElement("a");
+
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    chrome.windows.create({
+      url,
+      incognito
+    });
+  }
+
+  if (incognito) {
+    card.addEventListener("click", handleCardClick)
+    card.addEventListener('auxclick', handleCardClick)
+  }
+
   const buttonsDiv = document.createElement("div");
   const imgDiv = document.createElement("div");
   const img = document.createElement("img");
