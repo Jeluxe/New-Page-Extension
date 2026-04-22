@@ -475,6 +475,7 @@ const repositionElements = () => Array.from(cardsElement.children).forEach((elem
 
 const removeEvent = (e) => {
   e.preventDefault();
+  e.stopPropagation();
 
   const element = e.target.parentNode.parentNode;
   const elementPos = Number(element.getAttribute("position"))
