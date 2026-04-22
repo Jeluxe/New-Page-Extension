@@ -16,7 +16,7 @@ span {
     background-color: rgb(0, 81, 105);
 }
 
-.extensionInput,
+.extensionInput:not(:nth-child(3), :nth-child(4)),
 #btn {
     display: flex;
     justify-content: center;
@@ -33,6 +33,10 @@ span {
     background-color: #ffffffc2;
     border-radius: 25px;
     padding-left: 10px;
+}
+
+input[type='checkbox'] {
+    width: 18px;
 }
 
 #submit {
