@@ -481,6 +481,17 @@ a:visited {
   padding: 0 20px;
 }
 
+.card-modal-container .modal-text-inputs:last-child {
+  justify-content: flex-start;
+  padding-left: 12px;
+  align-items: flex-start;
+  gap: 10px;
+
+  & #incognito {
+    width: 18px;
+  }
+}
+
 .modal-controls-wrapper {
   display: flex;
   justify-content: center;

@@ -6,6 +6,7 @@ const [addFolder, backgroundButton, importExportButton] = Array.from(document.qu
 const cardModal = document.getElementsByClassName("card-modal-container")[0];
 const titleElement = document.getElementById("title");
 const urlElement = document.getElementById("url");
+const incognitoElement = document.getElementById("incognito");
 const [successEditModalButton, cancelEditModalButton] = Array.from(document.querySelector(".modal-controls-wrapper > .icons-wrap").children)
 const bgModal = document.getElementsByClassName("bg-modal-container")[0];
 const bgInput = document.getElementById("bg-input");

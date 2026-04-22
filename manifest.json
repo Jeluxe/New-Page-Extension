@@ -4,6 +4,7 @@
     "version": "1.0",
     "description": "new look for new tab",
     "author": "Jelxue",
+    "incognito": "split",
     "chrome_url_overrides": {
         "newtab": "index.html"
     },

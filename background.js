@@ -1,6 +1,7 @@
 let titleInput = document.getElementById("title-input");
 let urlInput = document.getElementById("url-input");
 let folderSelectionDropdown = document.getElementById("select-folder");
+let incognitoInput = document.getElementById("incognito-input");
 let button = document.getElementById("submit");
 let exportBtn = document.getElementById("export");
 let tempFavIconUrl;
@@ -79,6 +80,7 @@ const updateCards = async (title, url, logo) => {
     url,
     logo,
     color: CARD_DEFAULT_COLOR,
+    incognito: incognitoInput.checked,
     position: cardList.length ?
       selectFolderPos ?
         cardList[selectFolderPos].cards.length :
