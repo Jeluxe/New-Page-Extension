@@ -27,6 +27,11 @@ const importModalButtons = document.querySelector("#import-export-modal > .secti
 const [successConfigModalButton, cancelConfigModalButton] = Array.from(importModalButtons.children)
 const notification = document.getElementById("notification");
 
+const tabGroupsButton = document.getElementsByClassName("tab-groups-button")[0];
+const tabGroupsModal = document.getElementsByClassName("tab-groups-modal-container")[0];
+const tabGroupsContainer = document.getElementsByClassName("tab-groups-container")[0];
+
+let savedTabGroups = {};
 let cardList = [];
 let flag;
 let imgPreview;
@@ -47,6 +52,94 @@ document.addEventListener("keydown", (e) => {
     }
   }
 });
+
+const optDropdownMenu = document.getElementsByClassName("options-dropdown-menu")[0];
+
+tabGroupsButton.addEventListener("click", async () => {
+  resetModal();
+  overlay.classList.remove("hide");
+  tabGroupsModal.classList.remove("hide");
+
+  tabGroupsContainer.innerHTML = "";
+
+  const fetchedTabGroups = await fetchTabGroupData();
+  savedTabGroups = fetchedTabGroups;
+
+  Object.entries(fetchedTabGroups).map(async ([key, { title, color, list }]) => {
+    const groupContainer = document.createElement("div");
+    groupContainer.classList.add("group-container");
+    groupContainer.id = key;
+    const groupTitleWrapper = document.createElement("div");
+    groupTitleWrapper.classList.add("group-title-wrapper");
+    groupTitleWrapper.style.backgroundColor = color;
+    const groupTitle = document.createElement("span");
+    groupTitle.classList.add("group-title");
+    groupTitle.innerText = title;
+    groupTitleWrapper.appendChild(groupTitle);
+    const optionsButton = document.createElement("div");
+    optionsButton.innerHTML = "<div>...</div>";
+    optionsButton.classList.add("group-options-button");
+    optionsButton.addEventListener("click", (event) => {
+      const rect = event.target.getBoundingClientRect();
+
+      optDropdownMenu.style.top = `${rect.bottom + 10}px`;
+      optDropdownMenu.style.left = `${rect.left}px`;
+
+      optDropdownMenu.classList.remove("hide")
+      optDropdownMenu.focus();
+    })
+    //createBookmarkFromTabGroup(key)
+    groupTitleWrapper.appendChild(optionsButton)
+    const groupList = document.createElement("div");
+    groupList.classList.add("group-list");
+
+    list.map(({ id, favIconUrl, title }) => {
+      const groupItem = document.createElement("div");
+      groupItem.id = id;
+      groupItem.classList.add("group-item");
+      const itemImg = document.createElement("img");
+
+      groupItem.innerText = title;
+
+      if (favIconUrl) {
+        itemImg.src = favIconUrl;
+        itemImg.width = 20;
+        itemImg.style.marginRight = "10px";
+        groupItem.prepend(itemImg);
+      }
+
+      groupList.appendChild(groupItem);
+    })
+
+    groupContainer.appendChild(groupTitleWrapper);
+    groupContainer.appendChild(groupList);
+    tabGroupsContainer.appendChild(groupContainer);
+  })
+})
+
+optDropdownMenu.addEventListener("blur", (e) => e.target.classList.add("hide"))
+
+const createBookmarkFromTabGroup = async (tabGroupId) => {
+  const { title, list } = savedTabGroups[tabGroupId];
+
+  if (window.confirm("Are you sure you want to make this Tab Group into bookmark folder?")) {
+    // 1 is favorites bar
+    // 57 is id of "other favorites" 
+    // 86 is for "mobile favorites"
+    const folder = await chrome.bookmarks.create({
+      parentId: "57",
+      title: title
+    });
+
+    await Promise.all(list.map(({ title, url }) => {
+      chrome.bookmarks.create({
+        parentId: folder.id,
+        title,
+        url
+      })
+    }))
+  }
+}
 
 successEditModalButton.addEventListener("click", () => editCardData())
 cancelEditModalButton.addEventListener("click", () => resetModal())
@@ -253,3 +346,22 @@ document.addEventListener("DOMContentLoaded", () => {
   renderBackground();
   renderCards();
 });
+
+const fetchTabGroupData = async () => {
+  const tabGroups = {}
+
+  const tabs = await chrome.tabs.query({});
+
+  for (const tab of tabs) {
+    if (tab.groupId && tab.groupId !== -1) {
+      if (tabGroups[tab.groupId] && tabGroups[tab.groupId].list.length > 0) {
+        tabGroups[tab.groupId].list.push(tab);
+      } else {
+        const fetchedGroupData = await chrome.tabGroups.get(tab.groupId);
+        tabGroups[tab.groupId] = { title: fetchedGroupData.title, color: fetchedGroupData.color, list: [tab] };
+      }
+    }
+  }
+
+  return tabGroups;
+}

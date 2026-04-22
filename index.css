@@ -39,6 +39,107 @@ a:visited {
   position: relative;
 }
 
+.tab-groups-button-wrapper {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  right: 10px;
+}
+
+.tab-groups-modal-title-wrapper>h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.tab-groups-button {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 25px;
+  background-color: white;
+  color: black;
+  font-size: 15px;
+  font-weight: bold;
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.tab-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-container {
+  background: #ffffffa6;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.group-list {
+  max-height: 300px;
+  padding: 5px 10px;
+  overflow-y: auto;
+}
+
+.group-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.group-title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.group-title {
+  font-weight: bold;
+  background-color: var(--semi-transparent-white);
+  border-radius: 25px;
+  padding: 4px 10px;
+  height: 15px;
+}
+
+.group-options-button {
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--semi-transparent-white);
+  cursor: pointer;
+  user-select: none;
+}
+
+.group-options-button>div {
+  margin-bottom: 17px;
+  font-size: 25px;
+}
+
+.options-dropdown-menu {
+  position: absolute;
+  background: white;
+  outline: 0px;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+}
+
+.dropdown-button {
+  border-top: 1px solid lightgrey;
+  padding: 2px 4px;
+  cursor: pointer;
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
 .edit,
 .remove {
   padding: 0.2rem;
@@ -307,7 +408,7 @@ a:visited {
   display: grid;
   justify-items: center;
   align-items: center;
-  }
+}
 
 .folder-modal-container {
   &>div>div {
